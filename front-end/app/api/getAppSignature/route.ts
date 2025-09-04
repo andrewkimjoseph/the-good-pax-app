@@ -1,16 +1,55 @@
 import { NextResponse } from 'next/server'
-import { createWalletClient, http, createPublicClient } from 'viem'
+import { createWalletClient, http, createPublicClient, Account } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { celo } from 'viem/chains'
 import { EngagementRewardsSDK } from '@goodsdks/engagement-sdk'
 
-// App configuration from environment variables
-const APP_PRIVATE_KEY = process.env.APP_PRIVATE_KEY! as `0x${string}`
-const APP_ADDRESS = process.env.APP_ADDRESS! as `0x${string}`
-const REWARDS_CONTRACT = process.env.REWARDS_CONTRACT! as `0x${string}`
+// Environment variable validation
+function validateEnvVars() {
+  const requiredEnvVars = {
+    APP_PRIVATE_KEY: process.env.APP_PRIVATE_KEY,
+    APP_ADDRESS: process.env.APP_ADDRESS,
+    REWARDS_CONTRACT: process.env.REWARDS_CONTRACT
+  }
 
-// Initialize viem clients
-const account = privateKeyToAccount(APP_PRIVATE_KEY)
+  for (const [key, value] of Object.entries(requiredEnvVars)) {
+    if (!value) {
+      throw new Error(`Missing required environment variable: ${key}`)
+    }
+    if (key !== 'APP_PRIVATE_KEY' && (!value.startsWith('0x') || value.length !== 42)) {
+      throw new Error(`Invalid ${key} format: must be a valid Ethereum address`)
+    }
+    if (key === 'APP_PRIVATE_KEY' && (!value.startsWith('0x') || value.length !== 66)) {
+      throw new Error(`Invalid ${key} format: must be a valid private key`)
+    }
+  }
+
+  return requiredEnvVars
+}
+
+// App configuration from environment variables
+let APP_PRIVATE_KEY: `0x${string}` | null
+let APP_ADDRESS: `0x${string}` | null
+let REWARDS_CONTRACT: `0x${string}` | null
+let account: Account | null
+
+// Initialize variables safely
+try {
+  const envVars = validateEnvVars()
+  APP_PRIVATE_KEY = envVars.APP_PRIVATE_KEY as `0x${string}`
+  APP_ADDRESS = envVars.APP_ADDRESS as `0x${string}`
+  REWARDS_CONTRACT = envVars.REWARDS_CONTRACT as `0x${string}`
+  
+  // Initialize viem clients only if env vars are valid
+  account = privateKeyToAccount(APP_PRIVATE_KEY)
+} catch (error) {
+  console.error('Environment variable validation failed:', error)
+  // Set to null so we can handle this in the API endpoints
+  APP_PRIVATE_KEY = null
+  APP_ADDRESS = null
+  REWARDS_CONTRACT = null
+  account = null
+}
 
 // Create clients for Celo blockchain
 const publicClient = createPublicClient({ 
@@ -18,11 +57,17 @@ const publicClient = createPublicClient({
   transport: http()
 })
 
-const walletClient = createWalletClient({ 
-  chain: celo,
-  transport: http(),
-  account
-})
+// Create wallet client - will be recreated with account if env vars are valid
+let walletClient: ReturnType<typeof createWalletClient> | null = null
+
+// Initialize wallet client if account is available
+if (account) {
+  walletClient = createWalletClient({ 
+    chain: celo,
+    transport: http(),
+    account
+  })
+}
 
 // Function to initialize SDK when needed
 function getEngagementRewardsSDK() {
@@ -57,6 +102,14 @@ async function logSignatureRequest(data: {
 
 export async function POST(request: Request) {
   try {
+    // Check if environment variables are properly configured
+    if (!APP_PRIVATE_KEY || !APP_ADDRESS || !REWARDS_CONTRACT || !account || !walletClient) {
+      return NextResponse.json(
+        { error: 'Server configuration error: Missing required environment variables' },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
     const { user, validUntilBlock, inviter } = body
 
@@ -97,6 +150,7 @@ export async function POST(request: Request) {
 
     // Sign the prepared data
     const signature = await walletClient.signTypedData({
+      account,
       domain,
       types, 
       primaryType: 'AppClaim',
@@ -137,8 +191,15 @@ export async function POST(request: Request) {
 
 // Optional: Add GET method for health check
 export async function GET() {
+  const isConfigured = !!(APP_PRIVATE_KEY && APP_ADDRESS && REWARDS_CONTRACT && account && walletClient)
+  
   return NextResponse.json({ 
     message: 'getAppSignature API endpoint is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    configured: isConfigured,
+    ...(isConfigured ? {} : { 
+      error: 'Missing required environment variables',
+      required: ['APP_PRIVATE_KEY', 'APP_ADDRESS', 'REWARDS_CONTRACT']
+    })
   })
 }
