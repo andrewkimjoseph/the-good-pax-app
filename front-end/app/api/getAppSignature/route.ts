@@ -28,11 +28,9 @@ const walletClient = createWalletClient({
 function getEngagementRewardsSDK() {
   // Version compatibility issue between viem v2.37.1 and @goodsdks/engagement-sdk v1.0.1
   // The SDK expects a different transaction type interface than the current viem version provides
-  // @ts-ignore - Suppress constructor argument type mismatch
   const sdk = new EngagementRewardsSDK(
-    // @ts-ignore - Suppress publicClient type mismatch
+    // @ts-expect-error - Suppress publicClient type mismatch
     publicClient,
-    // @ts-ignore - Suppress walletClient type mismatch  
     walletClient,
     REWARDS_CONTRACT
   )
