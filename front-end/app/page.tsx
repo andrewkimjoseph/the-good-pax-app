@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
 import { useAccount } from "wagmi";
 
@@ -27,7 +26,7 @@ export default function Home() {
   );
 }
 
-import { useEngagementRewards, REWARDS_CONTRACT, DEV_REWARDS_CONTRACT } from '@goodsdks/engagement-sdk'
+import { useEngagementRewards } from '@goodsdks/engagement-sdk'
 
 // Configuration constants - replace with your actual values
 const APP_ADDRESS = process.env.NEXT_PUBLIC_APP_ADDRESS as `0x${string}` || "0x1234567890abcdef1234567890abcdef12345678"
