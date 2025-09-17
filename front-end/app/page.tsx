@@ -21,7 +21,7 @@ export default function Home() {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <ProdRewards />
+      <DevRewards />
     </div>
   );
 }
@@ -55,7 +55,7 @@ async function getAppSignature(params: {
   return data.signature
 }
 
-const ProdRewards = () => {
+const DevRewards = () => {
   const { address: userAddress, isConnected } = useAccount()
   const engagementRewards = useEngagementRewards("0x25db74CF4E7BA120526fd87e159CF656d94bAE43")
   const [isLoading, setIsLoading] = useState(false)
@@ -137,7 +137,7 @@ const ProdRewards = () => {
           disabled={!isConnected || isLoading}
           className="min-w-[120px]"
         >
-          {isLoading ? "Processing..." : "Claim Rewards"}
+          {isLoading ? "Processing..." : "Claim 2,000 GoodDollar Tokens NOW"}
         </Button>
       </div>
       
