@@ -137,7 +137,7 @@ const DevRewards = () => {
           disabled={!isConnected || isLoading}
           className="min-w-[120px]"
         >
-          {isLoading ? "Processing..." : "Claim 2,000 GoodDollar Tokens NOW"}
+          {isLoading ? "Processing..." : "Claim 3,000 GoodDollar Tokens NOW"}
         </Button>
       </div>
       
