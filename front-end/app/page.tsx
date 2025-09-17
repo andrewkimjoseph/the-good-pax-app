@@ -57,7 +57,7 @@ async function getAppSignature(params: {
 
 const DevRewards = () => {
   const { address: userAddress, isConnected } = useAccount()
-  const engagementRewards = useEngagementRewards("0xb44fC3A592aDaA257AECe1Ae8956019EA53d0465")
+  const engagementRewards = useEngagementRewards("0x25db74CF4E7BA120526fd87e159CF656d94bAE43")
   const [isLoading, setIsLoading] = useState(false)
   const [status, setStatus] = useState<string>("")
   
