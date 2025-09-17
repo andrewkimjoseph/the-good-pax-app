@@ -21,7 +21,7 @@ export default function Home() {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <DevRewards />
+      <ProdRewards />
     </div>
   );
 }
@@ -55,7 +55,7 @@ async function getAppSignature(params: {
   return data.signature
 }
 
-const DevRewards = () => {
+const ProdRewards = () => {
   const { address: userAddress, isConnected } = useAccount()
   const engagementRewards = useEngagementRewards("0x25db74CF4E7BA120526fd87e159CF656d94bAE43")
   const [isLoading, setIsLoading] = useState(false)
