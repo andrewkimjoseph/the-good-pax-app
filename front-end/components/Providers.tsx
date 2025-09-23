@@ -12,6 +12,7 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { Navigation } from "@/components/Navigation";
+import { useState } from "react";
 
 const connectors = connectorsForWallets(
   [
@@ -34,9 +35,16 @@ const config = createConfig({
   },
 });
 
-const queryClient = new QueryClient();
-
 export function Providers({ children }: { children: React.ReactNode }) {
+  // Create QueryClient inside component to avoid hydration issues
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,
+      },
+    },
+  }));
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
