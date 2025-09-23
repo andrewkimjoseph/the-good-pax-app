@@ -14,8 +14,8 @@ export default function Home() {
             <Image
               src="/thegoodpaxapp.svg"
               alt="The Good Pax App Logo"
-              width={120}
-              height={120}
+              width={180}
+              height={180}
               className="drop-shadow-lg"
             />
           </div>
