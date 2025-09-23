@@ -15,6 +15,7 @@ import {
   injectedWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+import { Navigation } from "@/components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,7 +65,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{
-          background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(90deg, #FF9C4C 0%, #FF5C86 100%)',
           minHeight: '100vh',
         }}
       >
@@ -72,7 +73,10 @@ export default function RootLayout({
           <div className="w-full max-w-md bg-white shadow-xl">
             <WagmiProvider config={config}>
               <QueryClientProvider client={queryClient}>
-                <RainbowKitProvider>{children}</RainbowKitProvider>
+                <RainbowKitProvider>
+                  <Navigation />
+                  {children}
+                </RainbowKitProvider>
               </QueryClientProvider>
             </WagmiProvider>
           </div>
