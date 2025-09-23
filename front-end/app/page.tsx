@@ -1,19 +1,29 @@
 "use client";
 import Link from "next/link";
 import { useAccount } from "wagmi";
+import Image from "next/image";
 import { Button } from "@/components/ui/button"
 
 export default function Home() {
   const { isConnected } = useAccount();
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
-      <div className="flex-1 flex flex-col items-center justify-center gap-6">
+      <div className="flex-1 flex flex-col items-center justify-start pt-16 gap-6">
         <div className="text-center">
+          <div className="mb-6 flex justify-center">
+            <Image
+              src="/thegoodpaxapp.svg"
+              alt="The Good Pax App Logo"
+              width={120}
+              height={120}
+              className="drop-shadow-lg"
+            />
+          </div>
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
             Welcome to The Good Pax App
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Claim your G$ reward for engaging with the Canvassing ecosystem
+            Claim your G$ reward for engaging with the Canvassing ecosystem and more!
           </p>
         </div>
         {isConnected ? (
