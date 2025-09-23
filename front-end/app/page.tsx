@@ -38,7 +38,7 @@ export default function Home() {
               Please connect your GoodDollar-verified wallet to continue ...
             </p>
             <p className="text-sm text-gray-400">
-              Don't have a wallet?{" "}
+              Don&apos;t have a wallet?{" "}
               <a 
                 href="https://goodwallet.xyz?inviteCode=2TWZbDwPWN" 
                 target="_blank" 
