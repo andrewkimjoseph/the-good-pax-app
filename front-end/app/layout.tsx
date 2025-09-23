@@ -37,7 +37,7 @@ export default function RootLayout({
         }}
       >
         <div className="min-h-screen flex justify-center">
-          <div className="w-full max-w-md bg-white shadow-xl">
+          <div className="w-full max-w-lg bg-white shadow-xl">
             <Providers>
               {children}
             </Providers>
