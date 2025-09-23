@@ -63,12 +63,20 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{
+          background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+          minHeight: '100vh',
+        }}
       >
-        <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider>{children}</RainbowKitProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
+        <div className="min-h-screen flex justify-center">
+          <div className="w-full max-w-md bg-white shadow-xl">
+            <WagmiProvider config={config}>
+              <QueryClientProvider client={queryClient}>
+                <RainbowKitProvider>{children}</RainbowKitProvider>
+              </QueryClientProvider>
+            </WagmiProvider>
+          </div>
+        </div>
       </body>
     </html>
   );
