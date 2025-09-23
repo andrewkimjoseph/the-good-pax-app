@@ -33,9 +33,22 @@ export default function Home() {
             </Button>
           </Link>
         ) : (
-          <p className="text-lg text-gray-500 text-center">
-            Please connect your GoodDollar-verified wallet to continue ...
-          </p>
+          <div className="text-center">
+            <p className="text-lg text-gray-500 mb-6">
+              Please connect your GoodDollar-verified wallet to continue ...
+            </p>
+            <p className="text-sm text-gray-400">
+              Don't have a wallet?{" "}
+              <a 
+                href="https://goodwallet.xyz?inviteCode=2TWZbDwPWN" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:text-blue-600 underline"
+              >
+                Get it here
+              </a>
+            </p>
+          </div>
         )}
       </div>
     </div>
