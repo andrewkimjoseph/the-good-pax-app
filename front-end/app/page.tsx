@@ -13,20 +13,25 @@ import {
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <NavigationMenu>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <ConnectButton />
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-      <DevRewards />
+    <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
+      <div className="w-full flex justify-center">
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <ConnectButton />
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
+      <div className="flex-1 flex items-center justify-center">
+        <DevRewards />
+      </div>
     </div>
   );
 }
 
 import { useEngagementRewards } from '@goodsdks/engagement-sdk'
+import { checkIfEngagementRewardsTransactionReverted } from '@/services/checkIfEngagementRewardsTransactionReverted'
 
 // Configuration constants - replace with your actual values
 const APP_ADDRESS = process.env.NEXT_PUBLIC_APP_ADDRESS as `0x${string}` || "0x1234567890abcdef1234567890abcdef12345678"
@@ -119,7 +124,15 @@ const DevRewards = () => {
         appSignature as `0x${string}`
       )
 
-      setStatus(`Claim successful! Transaction: ${receipt.transactionHash}`)
+      // Check if transaction reverted
+      setStatus("Checking transaction status...")
+      const transactionReverted = await checkIfEngagementRewardsTransactionReverted(receipt.transactionHash)
+      
+      if (transactionReverted) {
+        setStatus(`Claim failed: Transaction reverted. Transaction: ${receipt.transactionHash}`)
+      } else {
+        setStatus(`Claim successful! Transaction: ${receipt.transactionHash}`)
+      }
       
     } catch (error) {
       console.error("Claim failed:", error)
@@ -130,19 +143,19 @@ const DevRewards = () => {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 max-w-md mx-auto">
-      <div className="flex flex-wrap items-center gap-2 md:flex-row">
+    <div className="flex flex-col items-center gap-4 w-full max-w-xs mx-auto px-4">
+      <div className="w-full flex justify-center">
         <Button 
           onClick={handleClaim} 
           disabled={!isConnected || isLoading}
-          className="min-w-[120px]"
+          className="w-full max-w-xs text-sm px-4 py-2"
         >
           {isLoading ? "Processing..." : "Claim 3,000 GoodDollar Tokens NOW"}
         </Button>
       </div>
       
       {status && (
-        <div className={`text-sm p-3 rounded-md max-w-full break-words ${
+        <div className={`text-xs p-3 rounded-md w-full text-left break-words overflow-wrap-anywhere ${
           status.includes('successful') 
             ? 'bg-green-100 text-green-800 border border-green-200' 
             : status.includes('failed') || status.includes('error')
@@ -154,7 +167,7 @@ const DevRewards = () => {
       )}
       
       {!isConnected && (
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600 text-center">
           Connect your wallet to claim rewards
         </p>
       )}
