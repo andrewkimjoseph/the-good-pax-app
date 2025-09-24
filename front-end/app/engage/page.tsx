@@ -128,7 +128,7 @@ const ProductionRewardsEngagementButton = () => {
               Processing...
             </>
           ) : (
-            "Claim 3K G$ (GoodDollar) Tokens NOW!"
+            "Claim 3K G$ NOW!"
           )}
         </Button>
       </div>
