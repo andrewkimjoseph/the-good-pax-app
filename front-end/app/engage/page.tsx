@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 
@@ -25,13 +26,13 @@ export default function EngagePage() {
         </Link>
       </div>
       <div className="flex-1 flex items-center justify-center">
-        <DevRewards />
+        <ProductionRewardsEngagementButton />
       </div>
     </div>
   );
 }
 
-const DevRewards = () => {
+const ProductionRewardsEngagementButton = () => {
   const { address: userAddress, isConnected } = useAccount()
   const engagementRewards = useEngagementRewards("0x25db74CF4E7BA120526fd87e159CF656d94bAE43")
   const [isLoading, setIsLoading] = useState(false)
@@ -121,7 +122,14 @@ const DevRewards = () => {
           disabled={!isConnected || isLoading}
           className="w-full text-sm px-6 py-3"
         >
-          {isLoading ? "Processing..." : "Claim 3K G$ (GoodDollar) Tokens NOW!"}
+          {isLoading ? (
+            <>
+              <Loader2 className="animate-spin" />
+              Processing...
+            </>
+          ) : (
+            "Claim 3K G$ (GoodDollar) Tokens NOW!"
+          )}
         </Button>
       </div>
       
