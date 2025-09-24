@@ -17,21 +17,15 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "The Good Pax App",
   description: "Canvassing x GoodDollar",
-  themeColor: "#18aefa",
   icons: {
-    icon: [
-      { url: '/thegoodpaxapp.svg?v=3', type: 'image/svg+xml', sizes: 'any' },
-      { url: '/favicon.ico?v=3', type: 'image/x-icon' }
-    ],
-    apple: [
-      { url: '/thegoodpaxapp.svg?v=3', sizes: '180x180', type: 'image/svg+xml' }
-    ],
-    shortcut: '/thegoodpaxapp.svg?v=3',
+    icon: '/thegoodpaxapp.svg',
+    apple: '/thegoodpaxapp.svg',
+    shortcut: '/thegoodpaxapp.svg',
   },
-  other: {
-    'msapplication-TileImage': '/thegoodpaxapp.svg?v=3',
-    'msapplication-TileColor': '#18aefa',
-  },
+};
+
+export const viewport = {
+  themeColor: "#18aefa",
 };
 
 
