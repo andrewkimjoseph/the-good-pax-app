@@ -17,15 +17,20 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "The Good Pax App",
   description: "Canvassing x GoodDollar",
+  themeColor: "#18aefa",
   icons: {
     icon: [
-      { url: '/thegoodpaxapp.svg?v=2', type: 'image/svg+xml', sizes: 'any' },
-      { url: '/favicon.ico?v=2', type: 'image/x-icon' }
+      { url: '/thegoodpaxapp.svg?v=3', type: 'image/svg+xml', sizes: 'any' },
+      { url: '/favicon.ico?v=3', type: 'image/x-icon' }
     ],
     apple: [
-      { url: '/thegoodpaxapp.svg?v=2', sizes: '180x180', type: 'image/svg+xml' }
+      { url: '/thegoodpaxapp.svg?v=3', sizes: '180x180', type: 'image/svg+xml' }
     ],
-    shortcut: '/thegoodpaxapp.svg?v=2',
+    shortcut: '/thegoodpaxapp.svg?v=3',
+  },
+  other: {
+    'msapplication-TileImage': '/thegoodpaxapp.svg?v=3',
+    'msapplication-TileColor': '#18aefa',
   },
 };
 
@@ -37,15 +42,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/thegoodpaxapp.svg?v=2" type="image/svg+xml" sizes="any" />
-        <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
-        <link rel="apple-touch-icon" href="/thegoodpaxapp.svg?v=2" sizes="180x180" />
-        <link rel="shortcut icon" href="/thegoodpaxapp.svg?v=2" type="image/svg+xml" />
-        <meta name="msapplication-TileImage" content="/thegoodpaxapp.svg?v=2" />
-        <meta name="msapplication-TileColor" content="#18aefa" />
-        <meta name="theme-color" content="#18aefa" />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{
