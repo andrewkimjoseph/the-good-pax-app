@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Providers } from "@/components/Providers";
+import { Footer } from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,10 +38,13 @@ export default function RootLayout({
         }}
       >
         <div className="min-h-screen flex justify-center">
-          <div className="w-full max-w-lg bg-white shadow-xl">
+          <div className="w-full max-w-lg bg-white shadow-xl relative">
             <Providers>
-              {children}
+              <div className="pb-48">
+                {children}
+              </div>
             </Providers>
+            <Footer />
           </div>
         </div>
       </body>
