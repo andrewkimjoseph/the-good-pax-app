@@ -77,7 +77,7 @@ export const useWalletVerification = () => {
   const generateFVLink = useCallback(async (): Promise<void> => {
     if (!identitySDK) {
       console.error('Identity SDK not initialized');
-      return;
+      throw new Error('Identity SDK not initialized');
     }
 
     try {
@@ -88,9 +88,12 @@ export const useWalletVerification = () => {
       );
       if (link) {
         window.location.href = link;
+      } else {
+        throw new Error('No verification link generated');
       }
     } catch (error) {
       console.error('Error generating verification link:', error);
+      throw error; // Re-throw so the UI can handle it properly
     }
   }, [identitySDK, chainId]);
 
