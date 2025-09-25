@@ -19,6 +19,7 @@ export default function Home() {
       isVerified: false,
       isWhitelisted: false,
       loading: false,
+      isRedirecting: false,
     });
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
@@ -26,13 +27,14 @@ export default function Home() {
     if (isConnected && address && sdkReady) {
       setVerificationStatus((prev) => ({ ...prev, loading: true }));
       checkVerificationStatus(address).then(setVerificationStatus);
-    } else {
-      setVerificationStatus({
-        isVerified: false,
-        isWhitelisted: false,
-        loading: false,
-      });
-    }
+      } else {
+        setVerificationStatus({
+          isVerified: false,
+          isWhitelisted: false,
+          loading: false,
+          isRedirecting: false,
+        });
+      }
   }, [isConnected, address, sdkReady, checkVerificationStatus]);
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
@@ -81,7 +83,7 @@ export default function Home() {
                   : "Unverified wallet"}
               </span>
             </div>
-            {verificationStatus.isVerified && !verificationStatus.loading && (
+            {verificationStatus.isVerified && !verificationStatus.loading && !verificationStatus.isRedirecting && (
               <Link href="/engage">
                 <Button
                   className="text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
@@ -102,21 +104,33 @@ export default function Home() {
                     setIsGeneratingLink(true);
                     try {
                       await generateFVLink();
-                    } finally {
+                      // Link generated successfully, now redirecting
                       setIsGeneratingLink(false);
+                      setVerificationStatus((prev) => ({ 
+                        ...prev, 
+                        isRedirecting: true 
+                      }));
+                      // Keep redirecting state active since user will be navigated away
+                    } catch (error) {
+                      // Only reset if link generation failed
+                      setIsGeneratingLink(false);
+                      setVerificationStatus((prev) => ({ 
+                        ...prev, 
+                        isRedirecting: false 
+                      }));
                     }
                   }}
-                  disabled={isGeneratingLink}
+                  disabled={isGeneratingLink || verificationStatus.isRedirecting}
                   className="text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed"
                   style={{
                     background:
                       "linear-gradient(90deg, #FF9C4C 0%, #FF7A00 100%)",
                   }}
                 >
-                  {isGeneratingLink ? (
+                  {isGeneratingLink || verificationStatus.isRedirecting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Preparing...
+                      {isGeneratingLink ? "Preparing..." : "Redirecting..."}
                     </>
                   ) : (
                     "Get Verified"

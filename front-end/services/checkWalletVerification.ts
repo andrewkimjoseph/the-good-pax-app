@@ -9,6 +9,7 @@ export interface VerificationStatus {
   isWhitelisted: boolean;
   root?: string; // The whitelisted root address (could be the account itself or the connected identity)
   loading: boolean;
+  isRedirecting?: boolean;
   error?: string;
 }
 
