@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@farcaster/miniapp-sdk": "^0.1.10",
     "@goodsdks/engagement-sdk": "^1.0.1",
     "@goodsdks/identity-sdk": "^1.0.5",
     "@radix-ui/react-navigation-menu": "^1.2.14",

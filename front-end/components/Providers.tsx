@@ -12,7 +12,8 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { Navigation } from "@/components/Navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { sdk } from '@farcaster/miniapp-sdk';
 
 const connectors = connectorsForWallets(
   [
@@ -44,6 +45,20 @@ export function Providers({ children }: { children: React.ReactNode }) {
       },
     },
   }));
+
+  useEffect(() => {
+    // Initialize Farcaster miniapp SDK after the app is fully loaded
+    const initializeFarcasterSDK = async () => {
+      try {
+        await sdk.actions.ready();
+        console.log('Farcaster miniapp SDK initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize Farcaster miniapp SDK:', error);
+      }
+    };
+
+    initializeFarcasterSDK();
+  }, []);
 
   return (
     <WagmiProvider config={config}>
