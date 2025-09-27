@@ -4,7 +4,7 @@ import {
   connectorsForWallets,
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
-import { createConfig, http, injected, useConnect, WagmiProvider } from "wagmi";
+import { createConfig, http, WagmiProvider } from "wagmi";
 import { celo } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import {
@@ -12,36 +12,8 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { Navigation } from "@/components/Navigation";
-import { useState, useEffect } from "react";
-import { sdk } from "@farcaster/miniapp-sdk";
-
-// Component that handles Farcaster miniapp integration
-function FarcasterMiniAppIntegration() {
-  const { connect } = useConnect();
-
-  useEffect(() => {
-    // Initialize Farcaster miniapp SDK after the app is fully loaded
-    const initializeFarcasterSDK = async () => {
-      try {
-        await sdk.actions.ready();
-
-        const isInMiniApp = await sdk.isInMiniApp();
-        console.log("isInMiniApp", isInMiniApp);
-
-        if (isInMiniApp) {
-          connect({ connector: injected({ target: "metaMask" }) });
-        }
-        console.log("Farcaster miniapp SDK initialized successfully");
-      } catch (error) {
-        console.error("Failed to initialize Farcaster miniapp SDK:", error);
-      }
-    };
-
-    initializeFarcasterSDK();
-  }, [connect]);
-
-  return null; // This component doesn't render anything
-}
+import { useState } from "react";
+import { FarcasterMiniAppIntegration } from "@/components/FarcasterMiniAppIntegration";
 
 const connectors = connectorsForWallets(
   [
