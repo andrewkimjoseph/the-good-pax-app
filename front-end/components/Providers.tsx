@@ -15,6 +15,34 @@ import { Navigation } from "@/components/Navigation";
 import { useState, useEffect } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 
+// Component that handles Farcaster miniapp integration
+function FarcasterMiniAppIntegration() {
+  const { connect } = useConnect();
+
+  useEffect(() => {
+    // Initialize Farcaster miniapp SDK after the app is fully loaded
+    const initializeFarcasterSDK = async () => {
+      try {
+        await sdk.actions.ready();
+
+        const isInMiniApp = await sdk.isInMiniApp();
+        console.log("isInMiniApp", isInMiniApp);
+
+        if (isInMiniApp) {
+          connect({ connector: injected({ target: "metaMask" }) });
+        }
+        console.log("Farcaster miniapp SDK initialized successfully");
+      } catch (error) {
+        console.error("Failed to initialize Farcaster miniapp SDK:", error);
+      }
+    };
+
+    initializeFarcasterSDK();
+  }, [connect]);
+
+  return null; // This component doesn't render anything
+}
+
 const connectors = connectorsForWallets(
   [
     {
@@ -49,33 +77,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
       })
   );
 
-  const { connect } = useConnect();
-
-  useEffect(() => {
-    // Initialize Farcaster miniapp SDK after the app is fully loaded
-    const initializeFarcasterSDK = async () => {
-      try {
-        await sdk.actions.ready();
-
-        const isInMiniApp = await sdk.isInMiniApp();
-        console.log("isInMiniApp", isInMiniApp);
-
-        if (isInMiniApp) {
-          connect({ connector: injected({ target: "metaMask" }) });
-        }
-        console.log("Farcaster miniapp SDK initialized successfully");
-      } catch (error) {
-        console.error("Failed to initialize Farcaster miniapp SDK:", error);
-      }
-    };
-
-    initializeFarcasterSDK();
-  }, []);
-
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
+          <FarcasterMiniAppIntegration />
           <Navigation />
           {children}
         </RainbowKitProvider>
