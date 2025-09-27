@@ -4,7 +4,7 @@ import {
   connectorsForWallets,
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
-import { createConfig, http, WagmiProvider } from "wagmi";
+import { createConfig, http, injected, useConnect, WagmiProvider } from "wagmi";
 import { celo } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import {
@@ -13,7 +13,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { Navigation } from "@/components/Navigation";
 import { useState, useEffect } from "react";
-import { sdk } from '@farcaster/miniapp-sdk';
+import { sdk } from "@farcaster/miniapp-sdk";
 
 const connectors = connectorsForWallets(
   [
@@ -38,22 +38,34 @@ const config = createConfig({
 
 export function Providers({ children }: { children: React.ReactNode }) {
   // Create QueryClient inside component to avoid hydration issues
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 60 * 1000,
-      },
-    },
-  }));
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+          },
+        },
+      })
+  );
+
+  const { connect } = useConnect();
 
   useEffect(() => {
     // Initialize Farcaster miniapp SDK after the app is fully loaded
     const initializeFarcasterSDK = async () => {
       try {
         await sdk.actions.ready();
-        console.log('Farcaster miniapp SDK initialized successfully');
+
+        const isInMiniApp = await sdk.isInMiniApp();
+        console.log("isInMiniApp", isInMiniApp);
+
+        if (isInMiniApp) {
+          connect({ connector: injected({ target: "metaMask" }) });
+        }
+        console.log("Farcaster miniapp SDK initialized successfully");
       } catch (error) {
-        console.error('Failed to initialize Farcaster miniapp SDK:', error);
+        console.error("Failed to initialize Farcaster miniapp SDK:", error);
       }
     };
 
