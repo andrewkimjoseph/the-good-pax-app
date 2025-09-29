@@ -53,12 +53,7 @@ export default function Home() {
             Welcome to The Good Pax App
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Claim 3,000 G$ (0.3 USD) here!
-          </p>
-
-          <p className="text-md text-gray-600 mb-8">
-            Also, check out Pax where you can complete tasks and earn G$ and
-            stablecoins. Download Pax below! 👇
+            Claim 3,000 G$ (0.3 USD) and UBI here!
           </p>
         </div>
         {isConnected ? (
@@ -79,22 +74,35 @@ export default function Home() {
                 {verificationStatus.loading
                   ? "Checking verification..."
                   : verificationStatus.isVerified
-                  ? "Verified wallet"
-                  : "Unverified wallet"}
+                  ? "You are human 👤"
+                  : "You could be a bot, idk 🤖"}
               </span>
             </div>
             {verificationStatus.isVerified && !verificationStatus.loading && !verificationStatus.isRedirecting && (
-              <Link href="/engage">
-                <Button
-                  className="text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, #FF9C4C 0%, #FF5C86 100%)",
-                  }}
-                >
-                  Engage
-                </Button>
-              </Link>
+              <div className="flex flex-col gap-3 w-full max-w-xs">
+                <Link href="/claim">
+                  <Button
+                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #4C9FFF 0%, #5C86FF 100%)",
+                    }}
+                  >
+                    Claim UBI (Every day)
+                  </Button>
+                </Link>
+                <Link href="/engage">
+                  <Button
+                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #FF9C4C 0%, #FF5C86 100%)",
+                    }}
+                  >
+                    Engage (Every 180 days)
+                  </Button>
+                </Link>
+              </div>
             )}
             {!verificationStatus.isVerified &&
               !verificationStatus.loading &&
@@ -174,6 +182,14 @@ export default function Home() {
             </p> */}
           </div>
         )}
+        
+        {/* Pax Information - shown after buttons */}
+        <div className="mt-8 text-center">
+          <p className="text-md text-gray-600">
+            Also, check out Pax (Android only) where you can complete tasks and earn G$ and
+            stablecoins. Download Pax below! 👇
+          </p>
+        </div>
       </div>
     </div>
   );
