@@ -30,7 +30,6 @@ const ClaimComponent = () => {
   
   const [claimSDK, setClaimSDK] = useState<ClaimSDK | null>(null);
   const [entitlement, setEntitlement] = useState<bigint | null>(null);
-  const [entitlementResult, setEntitlementResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingEntitlement, setIsCheckingEntitlement] = useState(false);
   const [status, setStatus] = useState<string>("");
@@ -74,14 +73,12 @@ const ClaimComponent = () => {
         setError("");
         try {
           const entitlementResult = await claimSDK.checkEntitlement();
-          setEntitlementResult(entitlementResult);
           setEntitlement(entitlementResult.amount);
           console.log('Entitlement:', entitlementResult.amount.toString());
         } catch (error) {
           console.error('Entitlement check failed:', error);
           setError('Failed to check entitlement');
           setEntitlement(null);
-          setEntitlementResult(null);
         } finally {
           setIsCheckingEntitlement(false);
         }
@@ -116,7 +113,6 @@ const ClaimComponent = () => {
       setStatus("Claim successful! Check your wallet for the G$ tokens.");
       // Refresh entitlement after successful claim
       const newEntitlementResult = await claimSDK.checkEntitlement();
-      setEntitlementResult(newEntitlementResult);
       setEntitlement(newEntitlementResult.amount);
     } catch (error) {
       console.error('Claim failed:', error);
