@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button"
 
@@ -25,7 +25,7 @@ export default function EngagePage() {
           </Button>
         </Link>
       </div>
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-start justify-center pt-12">
         <ProductionRewardsEngagementButton />
       </div>
     </div>
@@ -115,7 +115,19 @@ const ProductionRewardsEngagementButton = () => {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-sm mx-auto px-4">
+    <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
+      <div className="text-center mb-6">
+        <div className="mb-6 flex justify-center">
+          <Sparkles className="h-20 w-20 text-orange-500" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          Engagement Rewards
+        </h2>
+        <p className="text-sm text-gray-600">
+          Claim your 3,000 G$ engagement rewards
+        </p>
+      </div>
+
       <div className="w-full flex justify-center">
         <Button 
           onClick={handleClaim} 
