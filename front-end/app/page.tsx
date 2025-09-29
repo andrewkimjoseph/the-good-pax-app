@@ -75,7 +75,7 @@ export default function Home() {
                   ? "Checking verification..."
                   : verificationStatus.isVerified
                   ? "You are human 👤"
-                  : "You could be a bot, idk 🤖"}
+                  : "You could be a bot 🤖"}
               </span>
             </div>
             {verificationStatus.isVerified && !verificationStatus.loading && !verificationStatus.isRedirecting && (
