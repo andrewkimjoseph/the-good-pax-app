@@ -9,6 +9,8 @@ import { celo } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import {
   injectedWallet,
+  metaMaskWallet,
+  rabbyWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { Navigation } from "@/components/Navigation";
@@ -19,7 +21,7 @@ const connectors = connectorsForWallets(
   [
     {
       groupName: "Recommended",
-      wallets: [walletConnectWallet, injectedWallet],
+      wallets: [walletConnectWallet, injectedWallet, rabbyWallet, metaMaskWallet],
     },
   ],
   {
