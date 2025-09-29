@@ -34,6 +34,8 @@ const ClaimComponent = () => {
   const [isCheckingEntitlement, setIsCheckingEntitlement] = useState(false);
   const [status, setStatus] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [nextClaimTime, setNextClaimTime] = useState<Date | null>(null);
+  const [countdown, setCountdown] = useState<string>("");
 
   // Initialize ClaimSDK when dependencies are ready
   useEffect(() => {
@@ -65,28 +67,77 @@ const ClaimComponent = () => {
     initClaimSDK();
   }, [publicClient, walletClient, userAddress, isConnected]);
 
+  // Function to check entitlement
+  const checkEntitlement = async () => {
+    if (claimSDK && userAddress && isConnected) {
+      setIsCheckingEntitlement(true);
+      setError("");
+      try {
+        const entitlementResult = await claimSDK.checkEntitlement();
+        setEntitlement(entitlementResult.amount);
+        console.log('Entitlement:', entitlementResult.amount.toString());
+        
+        // If no entitlement, get next claim time for countdown
+        if (entitlementResult.amount === BigInt(0)) {
+          try {
+            const nextClaim = await claimSDK.nextClaimTime();
+            setNextClaimTime(nextClaim);
+          } catch (error) {
+            console.error('Failed to get next claim time:', error);
+          }
+        } else {
+          setNextClaimTime(null);
+        }
+      } catch (error) {
+        console.error('Entitlement check failed:', error);
+        setError('Failed to check entitlement');
+        setEntitlement(null);
+        setNextClaimTime(null);
+      } finally {
+        setIsCheckingEntitlement(false);
+      }
+    }
+  };
+
   // Check entitlement when SDK is ready and user is connected
   useEffect(() => {
-    const checkEntitlement = async () => {
-      if (claimSDK && userAddress && isConnected) {
-        setIsCheckingEntitlement(true);
-        setError("");
-        try {
-          const entitlementResult = await claimSDK.checkEntitlement();
-          setEntitlement(entitlementResult.amount);
-          console.log('Entitlement:', entitlementResult.amount.toString());
-        } catch (error) {
-          console.error('Entitlement check failed:', error);
-          setError('Failed to check entitlement');
-          setEntitlement(null);
-        } finally {
-          setIsCheckingEntitlement(false);
+    checkEntitlement();
+  }, [claimSDK, userAddress, isConnected]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (!nextClaimTime) {
+      setCountdown("");
+      return;
+    }
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const claimTime = nextClaimTime.getTime();
+      const difference = claimTime - now;
+
+      if (difference > 0) {
+        const hours = Math.floor(difference / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        
+        setCountdown(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      } else {
+        setCountdown("");
+        setNextClaimTime(null);
+        // Trigger entitlement check when countdown reaches zero
+        if (claimSDK && userAddress && isConnected) {
+          checkEntitlement();
         }
       }
     };
 
-    checkEntitlement();
-  }, [claimSDK, userAddress, isConnected]);
+    // Update immediately and then every second
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [nextClaimTime, claimSDK, userAddress, isConnected]);
 
   const handleClaim = async () => {
     if (!userAddress || !isConnected) {
@@ -112,8 +163,7 @@ const ClaimComponent = () => {
       await claimSDK.claim();
       setStatus("Claim successful! Check your wallet for the G$ tokens.");
       // Refresh entitlement after successful claim
-      const newEntitlementResult = await claimSDK.checkEntitlement();
-      setEntitlement(newEntitlementResult.amount);
+      await checkEntitlement();
     } catch (error) {
       console.error('Claim failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -159,10 +209,10 @@ const ClaimComponent = () => {
           )}
           <span className="text-sm text-gray-600">
             {isCheckingEntitlement
-              ? "Checking entitlement..."
+              ? "Checking your UBI status..."
               : hasEntitlement
-            ? `Entitlement: ${formatEntitlement(entitlement!)} G$`
-            : "No entitlement available"}
+            ? `Ready to claim: ${formatEntitlement(entitlement!)} G$`
+            : "Come back tomorrow for UBI"}
           </span>
         </div>
 
@@ -174,7 +224,7 @@ const ClaimComponent = () => {
           }`}>
             {hasEntitlement
               ? `You have ${formatEntitlement(entitlement)} G$ available to claim`
-              : "No G$ currently available for claiming for you"}
+              : "No UBI available right now - check back daily"}
           </div>
         )}
       </div>
@@ -193,10 +243,10 @@ const ClaimComponent = () => {
             </>
           ) : !isConnected ? (
             "Connect Wallet"
-          ) : !claimSDK ? (
-            "Initializing..."
+          ) : !claimSDK || isCheckingEntitlement ? (
+            "Checking..."
           ) : !hasEntitlement ? (
-            "Check again later"
+            countdown ? `Available in ${countdown}` : "Check again later"
           ) : (
             "Claim UBI"
           )}
@@ -224,7 +274,7 @@ const ClaimComponent = () => {
       
       {!isConnected && (
         <p className="text-sm text-gray-600 text-center">
-          Connect your wallet to check entitlement and claim UBI
+          Connect your wallet to check your daily UBI status
         </p>
       )}
     </div>
