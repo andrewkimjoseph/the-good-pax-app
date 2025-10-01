@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Loader2, CheckCircle, AlertCircle, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IdentitySDK, ClaimSDK } from '@goodsdks/citizen-sdk';
+import { TransactionReceipt } from "viem";
 
 export default function ClaimPage() {
   return (
@@ -160,10 +161,19 @@ const ClaimComponent = () => {
     setError("");
 
     try {
-      await claimSDK.claim();
-      setStatus("Claim successful! Check your wallet for the G$ tokens.");
-      // Refresh entitlement after successful claim
-      await checkEntitlement();
+      const receipt = await claimSDK.claim();
+      const r = receipt as TransactionReceipt;
+      
+      // Check if transaction was successful
+      if (r && r.status === 'success') {
+        setStatus(`Claim successful! Transaction: ${r.transactionHash}`);
+        // Refresh entitlement after successful claim
+        await checkEntitlement();
+      } else {
+        // Transaction failed or reverted
+        setStatus(`Claim failed: Transaction reverted. Transaction: ${r.transactionHash || 'Unknown'}`);
+        setError('Transaction was reverted by the network');
+      }
     } catch (error) {
       console.error('Claim failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -212,7 +222,9 @@ const ClaimComponent = () => {
               ? "Checking your UBI status..."
               : hasEntitlement
             ? `Ready to claim: ${formatEntitlement(entitlement!)} G$`
-            : "Come back tomorrow for UBI"}
+            : countdown
+            ? "UBI will be available soon"
+            : "Check back later for UBI"}
           </span>
         </div>
 
@@ -224,6 +236,8 @@ const ClaimComponent = () => {
           }`}>
             {hasEntitlement
               ? `You have ${formatEntitlement(entitlement)} G$ available to claim`
+              : countdown
+              ? "Your next UBI is coming up - see countdown below"
               : "No UBI available right now - check back daily"}
           </div>
         )}
