@@ -17,6 +17,8 @@ import { Navigation } from "@/components/Navigation";
 import { useState } from "react";
 import { FarcasterMiniAppIntegration } from "@/components/FarcasterMiniAppIntegration";
 
+const DRPC_API_KEY = process.env.NEXT_PUBLIC_DRPC_API_KEY 
+
 const connectors = connectorsForWallets(
   [
     {
@@ -34,7 +36,7 @@ const config = createConfig({
   connectors,
   chains: [celo],
   transports: {
-    [celo.id]: http(),
+    [celo.id]: http(`https://lb.drpc.live/celo/${DRPC_API_KEY}`),
   },
 });
 
