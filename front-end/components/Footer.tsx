@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { DRPCBadge } from "./DRPCBadge";
 
 export function Footer() {
   return (
     <footer className="fixed bottom-0 left-0 right-0 backdrop-blur  shadow-lg">
-      <div className="flex flex-col justify-center items-center py-4">
+      <div className="flex flex-col justify-center items-center py-4 space-y-1">
         <a
           href="https://thepax.app/thegoodpaxapp"
           target="_blank"
@@ -20,6 +21,7 @@ export function Footer() {
             className="h-36 w-auto max-w-full"
           />
         </a>
+        <DRPCBadge />
       </div>
     </footer>
   );
