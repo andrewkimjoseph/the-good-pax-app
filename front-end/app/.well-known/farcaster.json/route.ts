@@ -10,13 +10,13 @@ export async function GET() {
     "frame": {
       "name": "The Good Pax App",
       "version": "1",
-      "iconUrl": "https://thegoodpax.app/thegoodpaxapp.svg",
+      "iconUrl": "https://thegoodpax.app/thegoodpaxapp.png",
       "homeUrl": "https://thegoodpax.app",
-      "imageUrl": "https://thegoodpax.app/thegoodpaxapp.svg",
-      "splashImageUrl": "https://thegoodpax.app/thegoodpaxapp.svg",
+      "imageUrl": "https://thegoodpax.app/thegoodpaxapp.png",
+      "splashImageUrl": "https://thegoodpax.app/thegoodpaxapp.png",
       "splashBackgroundColor": "#f5f0ec",
       "subtitle": "Claim UBI on Farcaster",
-      "heroImageUrl": "https://thegoodpax.app/thegoodpaxapp.svg",
+      "heroImageUrl": "https://thegoodpax.app/thegoodpaxapp.png",
       "description": "The Good Pax App bring GoodDollar UBI claiming and Engagement Rewards, right in Farcaster. Powered by Canvassing.",
       "primaryCategory": "finance"
     }
