@@ -22,6 +22,12 @@ export const metadata = {
     apple: "/thegoodpaxapp.svg",
     shortcut: "/thegoodpaxapp.svg",
   },
+  other: {
+    "fc:miniapp":
+      '{"version":"1","imageUrl":"https://thegoodpax.app/thegoodpaxapp.png","button":{"title":"🚩 Start","action":{"type":"launch_miniapp","name":"The Good Pax App","url":"https://thegoodpax.app","splashImageUrl":"https://thegoodpax.app/thegoodpaxapp.png","splashBackgroundColor":"#f5f0ec"}}}',
+    "fc:frame":
+      '{"version":"1","imageUrl":"https://thegoodpax.app/thegoodpaxapp.png","button":{"title":"🚩 Start","action":{"type":"launch_frame","name":"The Good Pax App","url":"https://thegoodpax.app","splashImageUrl":"https://thegoodpax.app/thegoodpaxapp.png","splashBackgroundColor":"#f5f0ec"}}}',
+  },
 };
 
 export const viewport = {
