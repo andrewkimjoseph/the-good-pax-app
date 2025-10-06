@@ -22,12 +22,6 @@ export const metadata = {
     apple: "/thegoodpaxapp.svg",
     shortcut: "/thegoodpaxapp.svg",
   },
-  other: {
-    "fc:miniapp":
-      '{"version":"1","imageUrl":"/logo.png","button":{"title":"🚩 Start","action":{"type":"launch_miniapp","name":"The Good Pax App","url":"/","splashImageUrl":"/logo.png","splashBackgroundColor":"#f5f0ec"}}}',
-    "fc:frame":
-      '{"version":"1","imageUrl":"/logo.png","button":{"title":"🚩 Start","action":{"type":"launch_frame","name":"The Good Pax App","url":"/","splashImageUrl":"/logo.png","splashBackgroundColor":"#f5f0ec"}}}',
-  },
 };
 
 export const viewport = {
