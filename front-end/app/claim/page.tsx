@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useAccount, useWalletClient, usePublicClient } from "wagmi";
+import { useAccount, useWalletClient, usePublicClient, useChainId } from "wagmi";
 import Link from "next/link";
 import { Loader2, CheckCircle, AlertCircle, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IdentitySDK, ClaimSDK } from '@goodsdks/citizen-sdk';
 import { TransactionReceipt } from "viem";
+import { useNotification } from "@blockscout/app-sdk";
 
 export default function ClaimPage() {
   return (
@@ -37,7 +38,8 @@ const ClaimComponent = () => {
   const [error, setError] = useState<string>("");
   const [nextClaimTime, setNextClaimTime] = useState<Date | null>(null);
   const [countdown, setCountdown] = useState<string>("");
-
+  const { openTxToast } = useNotification();
+  const chainId = useChainId();
   // Initialize ClaimSDK when dependencies are ready
   useEffect(() => {
     const initClaimSDK = async () => {
@@ -163,6 +165,10 @@ const ClaimComponent = () => {
     try {
       const receipt = await claimSDK.claim();
       const r = receipt as TransactionReceipt;
+
+      if (r){
+        openTxToast(chainId.toString(), r.transactionHash);
+      }
       
       // Check if transaction was successful
       if (r && r.status === 'success') {
