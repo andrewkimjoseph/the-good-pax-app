@@ -16,14 +16,20 @@ import {
 import { Navigation } from "@/components/Navigation";
 import { useState } from "react";
 import { FarcasterMiniAppIntegration } from "@/components/FarcasterMiniAppIntegration";
+import { NotificationProvider } from "@blockscout/app-sdk";
 
-const DRPC_API_KEY = process.env.NEXT_PUBLIC_DRPC_API_KEY 
+const DRPC_API_KEY = process.env.NEXT_PUBLIC_DRPC_API_KEY;
 
 const connectors = connectorsForWallets(
   [
     {
       groupName: "Recommended",
-      wallets: [walletConnectWallet, injectedWallet, rabbyWallet, metaMaskWallet],
+      wallets: [
+        walletConnectWallet,
+        injectedWallet,
+        rabbyWallet,
+        metaMaskWallet,
+      ],
     },
   ],
   {
@@ -59,7 +65,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <RainbowKitProvider>
           <FarcasterMiniAppIntegration />
           <Navigation />
-          {children}
+          <NotificationProvider>{children}</NotificationProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
