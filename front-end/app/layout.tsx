@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Providers } from "@/components/Providers";
+import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next"
 
@@ -52,7 +53,8 @@ export default function RootLayout({
         <div className="min-h-screen flex justify-center">
           <div className="w-full max-w-lg bg-white shadow-xl relative">
             <Providers>
-              <div className="pb-48">{children}</div>
+              <Header />
+              <div className="pt-20 pb-48">{children}</div>
             </Providers>
             <Footer />
           </div>
