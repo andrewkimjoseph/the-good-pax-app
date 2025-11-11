@@ -9,7 +9,7 @@ export const DRPCBadge: React.FC = () => {
       className="inline-block"
     >
       <img 
-        style={{ width: '150px', height: '50px' }} 
+        style={{ width: '100px', height: '33px' }} 
         src="https://drpc.org/images/external/powered-by-drpc-light.svg" 
         alt="Powered by dRPC" 
       />

@@ -6,7 +6,7 @@ import { DRPCBadge } from "./DRPCBadge";
 export function Footer() {
   return (
     <footer className="fixed bottom-0 left-0 right-0 backdrop-blur  shadow-lg">
-      <div className="flex flex-col justify-center items-center py-4 space-y-1">
+      <div className="flex flex-row justify-center items-center py-2 space-x-4">
         <a
           href="https://thepax.app/thegoodpaxapp"
           target="_blank"
@@ -18,7 +18,7 @@ export function Footer() {
             alt="Get it on Google Play"
             width={100}
             height={100}
-            className="h-36 w-auto max-w-full"
+            className="h-32 w-auto max-w-full"
           />
         </a>
         <DRPCBadge />
