@@ -38,7 +38,7 @@ export default function Home() {
   }, [isConnected, address, sdkReady, checkVerificationStatus]);
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
-      <div className="flex-1 flex flex-col items-center justify-start pt-12 gap-6">
+      <div className="flex-1 flex flex-col items-center justify-start pt-4 gap-6">
         <div className="text-center">
           <div className="mb-6 flex justify-center">
             <Image
@@ -49,10 +49,10 @@ export default function Home() {
               className="drop-shadow-lg"
             />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-8">
+          <h1 className="text-2xl font-bold text-gray-800 mb-8">
             Welcome to The Good Pax App
           </h1>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-gray-600 mb-2">
             Claim 3,000 G$ (0.3 USD) and UBI here!
           </p>
         </div>
