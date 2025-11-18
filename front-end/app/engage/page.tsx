@@ -13,12 +13,9 @@ import { useNotification } from "@blockscout/app-sdk";
 
 // Configuration constants - replace with your actual values
 const APP_ADDRESS =
-  (process.env.NEXT_PUBLIC_APP_ADDRESS as `0x${string}`) ||
-  "0x1234567890abcdef1234567890abcdef12345678";
+  (process.env.NEXT_PUBLIC_APP_ADDRESS as `0x${string}`) 
 const INVITER_ADDRESS =
-  (process.env.NEXT_PUBLIC_INVITER_ADDRESS as `0x${string}`) ||
-  "0xabcdef1234567890abcdef1234567890abcdef12";
-
+  (process.env.NEXT_PUBLIC_INVITER_ADDRESS as `0x${string}`) 
 export default function EngagePage() {
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
@@ -54,16 +51,15 @@ const ProductionRewardsEngagementButton = () => {
       setStatus("Please connect your wallet first");
       return;
     }
-
     setIsLoading(true);
     setStatus("Processing claim...");
 
     try {
       // First check if user can claim
 
-      console.log("Checking user eligibility...");
-      console.log("APP_ADDRESS", APP_ADDRESS);
-      console.log("userAddress", userAddress);
+      // console.log("Checking user eligibility...");
+      // console.log("APP_ADDRESS", APP_ADDRESS);
+      // console.log("userAddress", userAddress);
       // const isEligible = await engagementRewards.canClaim(APP_ADDRESS, userAddress).catch(_ => false)
       // if (!isEligible) {
       //   throw new Error("User not eligible to claim")
@@ -121,12 +117,20 @@ const ProductionRewardsEngagementButton = () => {
         setStatus(`Claim successful! Transaction: ${receipt.transactionHash}`);
       }
     } catch (error) {
-      console.error("Claim failed:", error);
-      setStatus(
-        `Claim failed: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      // console.error("Claim failed:", error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : typeof error === "string"
+          ? error
+          : "";
+
+      if (message.includes("Claim cooldown not reached")) {
+        setStatus("You already claimed. Try again after the cooldown period.");
+        return;
+      }
+      setStatus(`Claim failed: ${message}`);
     } finally {
       setIsLoading(false);
     }
