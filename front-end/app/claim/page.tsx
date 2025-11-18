@@ -78,7 +78,7 @@ const ClaimComponent = () => {
       try {
         const entitlementResult = await claimSDK.checkEntitlement();
         setEntitlement(entitlementResult.amount);
-        console.log('Entitlement:', entitlementResult.amount.toString());
+        // console.log('Entitlement:', entitlementResult.amount.toString());
         
         // If no entitlement, get next claim time for countdown
         if (entitlementResult.amount === BigInt(0)) {
@@ -86,7 +86,7 @@ const ClaimComponent = () => {
             const nextClaim = await claimSDK.nextClaimTime();
             setNextClaimTime(nextClaim);
           } catch (error) {
-            console.error('Failed to get next claim time:', error);
+            // console.error('Failed to get next claim time:', error);
           }
         } else {
           setNextClaimTime(null);
