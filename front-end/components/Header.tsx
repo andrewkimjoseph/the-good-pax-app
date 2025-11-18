@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Wallet } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Token list - you can expand this array to add more tokens
+// Token list
 const TOKENS: TokenInfo[] = [
   {
     name: "GoodDollar",
@@ -21,19 +22,38 @@ const TOKENS: TokenInfo[] = [
     icon: "/tokens/gooddollar_icon.svg",
     symbol: "G$",
   },
+  {
+    name: "Celo Dollar",
+    address: "0x765de816845861e75a25fca122bb6898b8b1282a",
+    icon: "/tokens/cusd_icon.svg",
+    symbol: "cUSD",
+  },
+
+  {
+    name: "Tether",
+    address: "0x48065fbbe25f71c9282ddf5e1cd6d6a887483d5e",
+    icon: "/tokens/tether_usd_icon.svg",
+    symbol: "USDT",
+  },
+
+  {
+    name: "USD Coin",
+    address: "0xcebA9300f2b948710d2653dD7B07f33A8B32118C",
+    icon: "/tokens/usd_coin_icon.svg",
+    symbol: "USDC",
+  },
 ];
 
 export function Header() {
   const { address, isConnected } = useAccount();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Don't render if no wallet is connected
   if (!isConnected || !address) {
     return null;
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 shadow-md">
+    <div className="fixed top-0 left-0 right-0 z-20 shadow-md">
       <div className="flex justify-center">
         <div className="w-full max-w-lg">
           <Card className="rounded-none border-x-0 border-t-0 shadow-none">
@@ -61,13 +81,26 @@ export function Header() {
               </CardDescription>
             </CardHeader>
 
-            {isExpanded && (
-              <CardContent className="space-y-2">
-                {TOKENS.map((token) => (
-                  <Balance key={token.address} token={token} />
-                ))}
-              </CardContent>
-            )}
+            <AnimatePresence initial={false}>
+              {isExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeInOut",
+                  }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <CardContent className="space-y-2">
+                    {TOKENS.map((token) => (
+                      <Balance key={token.address} token={token} />
+                    ))}
+                  </CardContent>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Card>
         </div>
       </div>
