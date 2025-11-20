@@ -11,6 +11,7 @@ import {
   injectedWallet,
   metaMaskWallet,
   rabbyWallet,
+  valoraWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { Navigation } from "@/components/Navigation";
@@ -29,6 +30,7 @@ const connectors = connectorsForWallets(
         injectedWallet,
         rabbyWallet,
         metaMaskWallet,
+        valoraWallet
       ],
     },
   ],
