@@ -78,7 +78,7 @@ export default function RootLayout({
           <div className="w-full max-w-lg bg-white shadow-xl relative">
             <Providers>
               <Header />
-              <div className="pt-20 pb-48">{children}</div>
+              <div className="pb-32">{children}</div>
             </Providers>
             <Footer />
           </div>
