@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Providers } from "@/components/Providers";
-import { Header } from "@/components/Header";
+import { ConditionalHeader } from "@/components/ConditionalHeader";
 import { Footer } from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next"
 
@@ -77,7 +77,7 @@ export default function RootLayout({
         <div className="min-h-screen flex justify-center">
           <div className="w-full max-w-lg bg-white shadow-xl relative">
             <Providers>
-              <Header />
+              <ConditionalHeader />
               <div className="pb-32">{children}</div>
             </Providers>
             <Footer />
