@@ -55,6 +55,14 @@ export default function Home() {
           <p className="text-lg text-gray-600 mb-2">
             Claim 3,000 G$ (0.3 USD) and UBI here!
           </p>
+          <Link href="/onboarding">
+            <Button
+              variant="outline"
+              className="mt-4 text-sm px-6 py-2"
+            >
+              ℹ️ What is this? Learn more
+            </Button>
+          </Link>
         </div>
         {isConnected ? (
           <div className="flex flex-col items-center gap-3">
