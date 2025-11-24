@@ -14,7 +14,6 @@ import {
   valoraWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { Navigation } from "@/components/Navigation";
 import { useState } from "react";
 import { FarcasterMiniAppIntegration } from "@/components/FarcasterMiniAppIntegration";
 import { NotificationProvider } from "@blockscout/app-sdk";
@@ -66,7 +65,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <FarcasterMiniAppIntegration />
-          <Navigation />
           <NotificationProvider>{children}</NotificationProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
