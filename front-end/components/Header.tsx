@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { usePathname } from "next/navigation";
 import { Balance, TokenInfo } from "@/components/Balance";
 import {
   Card,
@@ -48,12 +47,6 @@ const TOKENS: TokenInfo[] = [
 export function Header() {
   const { address, isConnected } = useAccount();
   const [isExpanded, setIsExpanded] = useState(false);
-  const pathname = usePathname();
-
-  // Hide header on onboarding page
-  if (pathname === "/onboarding") {
-    return null;
-  }
 
   if (!isConnected || !address) {
     return null;
