@@ -88,6 +88,17 @@ class AnalyticsService {
   }
 
   /**
+   * Track successful engagement reward claim from Facebook ad
+   */
+  trackEngagementFromAd(params?: EngagementEventParams): void {
+    this.trackCustom('EngagementRewardClaimedFromAd', {
+      value: 3000,
+      currency: 'G$',
+      ...params,
+    });
+  }
+
+  /**
    * Track successful UBI claim
    */
   trackUBIClaim(params?: ClaimEventParams): void {
