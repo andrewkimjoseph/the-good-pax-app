@@ -5,20 +5,24 @@ import Image from "next/image";
 import { Gift, Sparkles, CheckCircle, Users, Coins, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { analytics } from "@/services/analytics";
+import { getFbclid, appendFbclidToUrl } from "@/services/fbclid";
 
 export default function OnboardingPage() {
   const router = useRouter();
 
-  // Track page view on mount
+  // Track page view on mount and capture fbclid
   useEffect(() => {
     analytics.trackPageView('onboarding');
+    // Capture fbclid if present in URL
+    getFbclid();
   }, []);
 
   const handleGetStarted = () => {
     // Set cookie to mark onboarding as complete
     document.cookie = "hasSeenOnboarding=true; path=/; max-age=31536000"; // 1 year
-    // Navigate to home page
-    router.push("/");
+    // Navigate to home page with fbclid preserved
+    const homeUrl = appendFbclidToUrl("/");
+    router.push(homeUrl);
   };
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">

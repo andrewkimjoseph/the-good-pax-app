@@ -8,17 +8,20 @@ import { IdentitySDK, ClaimSDK } from '@goodsdks/citizen-sdk';
 import { TransactionReceipt } from "viem";
 import { useNotification } from "@blockscout/app-sdk";
 import { analytics } from "@/services/analytics";
+import { getFbclid, appendFbclidToUrl } from "@/services/fbclid";
 
 export default function ClaimPage() {
-  // Track page view on mount
+  // Track page view on mount and capture fbclid
   useEffect(() => {
     analytics.trackPageView('claim');
+    // Capture fbclid if present in URL
+    getFbclid();
   }, []);
 
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
       <div className="w-full flex justify-start items-center">
-        <Link href="/">
+        <Link href={appendFbclidToUrl("/")}>
           <Button variant="outline" size="sm">
             ← Back to Home
           </Button>

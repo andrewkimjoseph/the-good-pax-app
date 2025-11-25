@@ -11,6 +11,7 @@ import { checkIfEngagementRewardsTransactionReverted } from "@/services/checkIfE
 import { getAppSignature } from "@/services/getAppSignature";
 import { useNotification } from "@blockscout/app-sdk";
 import { analytics } from "@/services/analytics";
+import { getFbclid, getStoredFbclid, appendFbclidToUrl } from "@/services/fbclid";
 
 // Configuration constants - replace with your actual values
 const APP_ADDRESS =
@@ -18,15 +19,17 @@ const APP_ADDRESS =
 const INVITER_ADDRESS =
   (process.env.NEXT_PUBLIC_INVITER_ADDRESS as `0x${string}`) 
 export default function EngagePage() {
-  // Track page view on mount
+  // Track page view on mount and capture fbclid
   useEffect(() => {
     analytics.trackPageView('engage');
+    // Capture fbclid if present in URL
+    getFbclid();
   }, []);
 
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
       <div className="w-full flex justify-start items-center">
-        <Link href="/">
+        <Link href={appendFbclidToUrl("/")}>
           <Button variant="outline" size="sm">
             ← Back to Home
           </Button>
@@ -121,12 +124,21 @@ const ProductionRewardsEngagementButton = () => {
         );
       } else {
         setStatus(`Claim successful! Transaction: ${receipt.transactionHash}`);
-        // Track successful engagement
-        analytics.trackEngagement({
-          transactionHash: receipt.transactionHash,
-          amount: '3000',
-          success: true,
-        });
+        // Track successful engagement - use special event if from ad
+        const fbclid = getStoredFbclid();
+        if (fbclid) {
+          analytics.trackEngagementFromAd({
+            transactionHash: receipt.transactionHash,
+            amount: '3000',
+            success: true,
+          });
+        } else {
+          analytics.trackEngagement({
+            transactionHash: receipt.transactionHash,
+            amount: '3000',
+            success: true,
+          });
+        }
       }
     } catch (error) {
       // console.error("Claim failed:", error);

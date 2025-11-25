@@ -10,6 +10,7 @@ import {
   VerificationStatus,
 } from "@/services/checkWalletVerification";
 import { analytics } from "@/services/analytics";
+import { getFbclid, appendFbclidToUrl } from "@/services/fbclid";
 
 export default function Home() {
   const { isConnected, address } = useAccount();
@@ -24,9 +25,11 @@ export default function Home() {
     });
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
-  // Track page view on mount
+  // Track page view on mount and capture fbclid
   useEffect(() => {
     analytics.trackPageView('home');
+    // Capture fbclid if present in URL
+    getFbclid();
   }, []);
 
   useEffect(() => {
@@ -61,7 +64,7 @@ export default function Home() {
           <p className="text-lg text-gray-600 mb-2">
             Claim 3,000 G$ (0.3 USD) and UBI here!
           </p>
-          <Link href="/onboarding">
+          <Link href={appendFbclidToUrl("/onboarding")}>
             <Button
               variant="outline"
               className="mt-4 text-sm px-6 py-2"
@@ -94,7 +97,7 @@ export default function Home() {
             </div>
             {verificationStatus.isVerified && !verificationStatus.loading && !verificationStatus.isRedirecting && (
               <div className="flex flex-col gap-3 w-full max-w-xs">
-                <Link href="/claim">
+                <Link href={appendFbclidToUrl("/claim")}>
                   <Button
                     className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
                     style={{
@@ -105,7 +108,7 @@ export default function Home() {
                     Claim UBI (Every day)
                   </Button>
                 </Link>
-                <Link href="/engage">
+                <Link href={appendFbclidToUrl("/engage")}>
                   <Button
                     className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
                     style={{
