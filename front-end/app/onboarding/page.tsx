@@ -1,11 +1,18 @@
 "use client";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Gift, Sparkles, CheckCircle, Users, Coins, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { analytics } from "@/services/analytics";
 
 export default function OnboardingPage() {
   const router = useRouter();
+
+  // Track page view on mount
+  useEffect(() => {
+    analytics.trackPageView('onboarding');
+  }, []);
 
   const handleGetStarted = () => {
     // Set cookie to mark onboarding as complete

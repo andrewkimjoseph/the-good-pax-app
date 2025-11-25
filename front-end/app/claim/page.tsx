@@ -7,8 +7,14 @@ import { Button } from "@/components/ui/button";
 import { IdentitySDK, ClaimSDK } from '@goodsdks/citizen-sdk';
 import { TransactionReceipt } from "viem";
 import { useNotification } from "@blockscout/app-sdk";
+import { analytics } from "@/services/analytics";
 
 export default function ClaimPage() {
+  // Track page view on mount
+  useEffect(() => {
+    analytics.trackPageView('claim');
+  }, []);
+
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
       <div className="w-full flex justify-start items-center">
@@ -173,6 +179,12 @@ const ClaimComponent = () => {
       // Check if transaction was successful
       if (r && r.status === 'success') {
         setStatus(`Claim successful! Transaction: ${r.transactionHash}`);
+        // Track successful UBI claim
+        analytics.trackUBIClaim({
+          transactionHash: r.transactionHash,
+          amount: formatEntitlement(entitlement!),
+          tokenSymbol: 'G$',
+        });
         // Refresh entitlement after successful claim
         await checkEntitlement();
       } else {

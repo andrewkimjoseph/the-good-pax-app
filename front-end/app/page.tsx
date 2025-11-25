@@ -9,6 +9,7 @@ import {
   useWalletVerification,
   VerificationStatus,
 } from "@/services/checkWalletVerification";
+import { analytics } from "@/services/analytics";
 
 export default function Home() {
   const { isConnected, address } = useAccount();
@@ -22,6 +23,11 @@ export default function Home() {
       isRedirecting: false,
     });
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+
+  // Track page view on mount
+  useEffect(() => {
+    analytics.trackPageView('home');
+  }, []);
 
   useEffect(() => {
     if (isConnected && address && sdkReady) {
