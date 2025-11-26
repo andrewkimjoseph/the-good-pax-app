@@ -131,6 +131,7 @@ const ProductionRewardsEngagementButton = () => {
             transactionHash: receipt.transactionHash,
             amount: '3000',
             success: true,
+            fbclid: fbclid, // Explicitly pass fbclid for attribution
           });
         } else {
           analytics.trackEngagement({

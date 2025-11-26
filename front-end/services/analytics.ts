@@ -29,6 +29,7 @@ interface EngagementEventParams {
   transactionHash?: string;
   amount?: string;
   success?: boolean;
+  fbclid?: string; // Facebook Click ID for ad attribution
 }
 
 interface ClaimEventParams {
