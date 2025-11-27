@@ -12,7 +12,7 @@ export default function OnboardingPage() {
 
   // Track page view on mount and capture fbclid
   useEffect(() => {
-    analytics.trackPageView('onboarding');
+    analytics.trackOnboardingPageViewed();
     // Capture fbclid if present in URL
     getFbclid();
   }, []);

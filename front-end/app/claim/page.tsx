@@ -13,7 +13,7 @@ import { getFbclid, appendFbclidToUrl } from "@/services/fbclid";
 export default function ClaimPage() {
   // Track page view on mount and capture fbclid
   useEffect(() => {
-    analytics.trackPageView('claim');
+    analytics.trackClaimPageViewed();
     // Capture fbclid if present in URL
     getFbclid();
   }, []);

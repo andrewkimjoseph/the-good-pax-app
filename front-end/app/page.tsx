@@ -27,7 +27,7 @@ export default function Home() {
 
   // Track page view on mount and capture fbclid
   useEffect(() => {
-    analytics.trackPageView('home');
+    analytics.trackHomePageViewed();
     // Capture fbclid if present in URL
     getFbclid();
   }, []);

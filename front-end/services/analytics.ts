@@ -71,10 +71,31 @@ class AnalyticsService {
   // ============================================
 
   /**
-   * Track page view - call when a route is opened
+   * Track home page view
    */
-  trackPageView(pageName: string): void {
-    this.trackStandard('PageView', { page: pageName });
+  trackHomePageViewed(): void {
+    this.trackCustom('HomePageViewed');
+  }
+
+  /**
+   * Track engagement page view
+   */
+  trackEngagementPageViewed(): void {
+    this.trackCustom('EngagementPageViewed');
+  }
+
+  /**
+   * Track claim page view
+   */
+  trackClaimPageViewed(): void {
+    this.trackCustom('ClaimPageViewed');
+  }
+
+  /**
+   * Track onboarding page view
+   */
+  trackOnboardingPageViewed(): void {
+    this.trackCustom('OnboardingPageViewed');
   }
 
   /**

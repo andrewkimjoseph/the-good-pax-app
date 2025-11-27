@@ -21,7 +21,7 @@ const INVITER_ADDRESS =
 export default function EngagePage() {
   // Track page view on mount and capture fbclid
   useEffect(() => {
-    analytics.trackPageView('engage');
+    analytics.trackEngagementPageViewed();
     // Capture fbclid if present in URL
     getFbclid();
   }, []);
