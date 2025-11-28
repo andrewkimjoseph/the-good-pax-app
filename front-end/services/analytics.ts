@@ -45,23 +45,33 @@ interface VerificationEventParams {
 
 class AnalyticsService {
   private isAvailable(): boolean {
-    return typeof window !== 'undefined' && typeof window.fbq === 'function';
+    if (typeof window === 'undefined') return false;
+    // Check if fbq exists and is a function
+    if (typeof window.fbq !== 'function') return false;
+    // Check if the pixel is actually loaded (not just the stub)
+    // The _fbq object has a 'loaded' property that indicates the pixel is ready
+    const fbq = window.fbq as any;
+    return fbq.loaded === true || (window as any)._fbq?.loaded === true;
   }
 
   /**
    * Track a standard Meta Pixel event
+   * Will queue the event if pixel isn't ready yet
    */
   trackStandard(event: StandardEvent, params?: Record<string, unknown>): void {
-    if (this.isAvailable()) {
+    if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+      // Meta Pixel's queue system will handle events even if not fully loaded
       window.fbq!('track', event, params);
     }
   }
 
   /**
    * Track a custom Meta Pixel event
+   * Will queue the event if pixel isn't ready yet
    */
   trackCustom(eventName: string, params?: Record<string, unknown>): void {
-    if (this.isAvailable()) {
+    if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+      // Meta Pixel's queue system will handle events even if not fully loaded
       window.fbq!('trackCustom', eventName, params);
     }
   }

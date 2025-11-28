@@ -51,7 +51,10 @@ export default function RootLayout({
           minHeight: "100vh",
         }}
       >
-        <Script id="meta-pixel" strategy="afterInteractive">
+        <Script
+          id="meta-pixel"
+          strategy="afterInteractive"
+        >
           {`
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -62,6 +65,7 @@ export default function RootLayout({
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '2561878580879293');
+            fbq('track', 'PageView');
           `}
         </Script>
         <noscript>
