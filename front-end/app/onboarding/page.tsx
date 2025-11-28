@@ -42,7 +42,7 @@ export default function OnboardingPage() {
             Welcome to The Good Pax App! 🎉
           </h1>
           <p className="text-lg text-gray-600 mb-2">
-            Your gateway to Universal Basic Income (UBI) on Celo the blockchain
+            Your gateway to Universal Basic Income (UBI) on the Celo blockchain
           </p>
         </div>
 
