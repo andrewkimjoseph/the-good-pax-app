@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 import { useEffect, useState, useCallback } from "react";
-import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle, AlertCircle, Loader2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   useWalletVerification,
@@ -119,6 +119,23 @@ export default function Home() {
                     Engage (Every 180 days)
                   </Button>
                 </Link>
+                <a
+                  href="https://gooddapp.org/#/swap/celoReserve"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => analytics.trackSwapViewed()}
+                >
+                  <Button
+                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #00C853 0%, #00A651 100%)",
+                    }}
+                  >
+                    Swap your G$ (All day)
+                    <ExternalLink className="ml-2 h-5 w-5" />
+                  </Button>
+                </a>
               </div>
             )}
             {!verificationStatus.isVerified &&

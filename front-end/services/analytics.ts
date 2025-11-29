@@ -109,6 +109,13 @@ class AnalyticsService {
   }
 
   /**
+   * Track swap page view
+   */
+  trackSwapViewed(): void {
+    this.trackCustom('SwapViewed');
+  }
+
+  /**
    * Track successful engagement reward claim
    */
   trackEngagement(params?: EngagementEventParams): void {
