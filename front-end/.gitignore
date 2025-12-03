@@ -44,7 +44,9 @@ next-env.d.ts
 .env.sentry-build-plugin
 
 # BrowserStack
-browserstack.err
+browserstack.*
+test-script-browserstack.ts
 
 # Logs
 local.log
+log/
