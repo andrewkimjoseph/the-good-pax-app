@@ -1,12 +1,14 @@
 {
-  "name": "the-good-pax-app",
-  "version": "1.1.2",
+  "name": "The Good Pax App",
+  "version": "1.1.3",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "npm update browserstack-node-sdk",
+    "test:browserstack": "tsx test-script-browserstack.ts"
   },
   "dependencies": {
     "@blockscout/app-sdk": "^0.1.2",
@@ -27,6 +29,7 @@
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "selenium-webdriver": "^4.38.0",
     "tailwind-merge": "^3.3.1",
     "viem": "^2.37.1",
     "wagmi": "^2.16.9"
@@ -37,9 +40,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/selenium-webdriver": "^4.35.4",
+    "browserstack-node-sdk": "^1.46.7",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "tw-animate-css": "^1.3.7",
     "typescript": "^5"
   }
