@@ -42,3 +42,9 @@ next-env.d.ts
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# BrowserStack
+browserstack.err
+
+# Logs
+local.log
