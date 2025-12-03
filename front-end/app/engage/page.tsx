@@ -28,7 +28,7 @@ export default function EngagePage() {
 
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
-      <div className="w-full flex justify-start items-center">
+      <div className="w-full flex justify-start items-center pt-8">
         <Link href={appendFbclidToUrl("/")}>
           <Button variant="outline" size="sm">
             ← Back to Home

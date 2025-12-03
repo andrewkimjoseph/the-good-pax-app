@@ -20,7 +20,7 @@ export default function ClaimPage() {
 
   return (
     <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
-      <div className="w-full flex justify-start items-center">
+      <div className="w-full flex justify-start items-center pt-8">
         <Link href={appendFbclidToUrl("/")}>
           <Button variant="outline" size="sm">
             ← Back to Home
@@ -215,7 +215,7 @@ const ClaimComponent = () => {
   const hasEntitlement = entitlement && entitlement > BigInt(0);
 
   return (
-    <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
+    <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto">
       <div className="text-center mb-6">
         <div className="mb-6 flex justify-center">
           <Gift className="h-20 w-20 text-blue-500" />

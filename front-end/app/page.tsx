@@ -218,10 +218,10 @@ export default function Home() {
         )}
         
         {/* Pax Information - shown after buttons */}
-        <div className="mt-8 text-center">
+        <div className="mt-4 text-center">
           <p className="text-md text-gray-600">
-            Also, check out Pax (Android only) where you can complete tasks and earn G$ and
-            stablecoins. Download Pax below! 👇
+            Also, check out Pax (Android and Web) where you can complete tasks and earn G$ and
+            stablecoins. <br /> <br />Download / visit Pax below! 👇
           </p>
         </div>
       </div>
