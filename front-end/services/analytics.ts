@@ -1,12 +1,12 @@
 /**
- * Analytics Service for Meta Pixel and other tracking providers
+ * Analytics Service for Meta Pixel and TikTok Pixel
  * 
  * Usage:
  *   import { analytics } from '@/services/analytics';
  *   analytics.trackEngagement({ transactionHash: '0x...' });
  */
 
-// Extend Window interface for fbq
+// Extend Window interface for fbq and ttq
 declare global {
   interface Window {
     fbq?: (
@@ -14,6 +14,10 @@ declare global {
       eventName: string,
       parameters?: Record<string, unknown>
     ) => void;
+    ttq?: {
+      track: (event: string, params?: Record<string, unknown>, options?: Record<string, unknown>) => void;
+      page: () => void;
+    };
   }
 }
 
@@ -44,7 +48,7 @@ interface VerificationEventParams {
 }
 
 class AnalyticsService {
-  private isAvailable(): boolean {
+  private isFacebookAvailable(): boolean {
     if (typeof window === 'undefined') return false;
     // Check if fbq exists and is a function
     if (typeof window.fbq !== 'function') return false;
@@ -52,6 +56,11 @@ class AnalyticsService {
     // The _fbq object has a 'loaded' property that indicates the pixel is ready
     const fbq = window.fbq as any;
     return fbq.loaded === true || (window as any)._fbq?.loaded === true;
+  }
+
+  private isTikTokAvailable(): boolean {
+    if (typeof window === 'undefined') return false;
+    return typeof window.ttq !== 'undefined' && typeof window.ttq?.track === 'function';
   }
 
   /**
@@ -76,6 +85,158 @@ class AnalyticsService {
     }
   }
 
+  /**
+   * Track TikTok ViewContent event
+   */
+  private trackTikTokViewContent(params?: {
+    contentId?: string;
+    contentType?: string;
+    contentName?: string;
+    value?: number;
+    currency?: string;
+    eventId?: string;
+  }): void {
+    if (!this.isTikTokAvailable()) return;
+
+    const contents = params?.contentId ? [{
+      content_id: params.contentId,
+      content_type: params.contentType || 'product',
+      content_name: params.contentName || '',
+    }] : [];
+
+    const trackParams: Record<string, unknown> = {};
+    if (contents.length > 0) {
+      trackParams.contents = contents;
+    }
+    if (params?.value !== undefined) {
+      trackParams.value = params.value;
+    }
+    if (params?.currency) {
+      trackParams.currency = params.currency;
+    }
+
+    const options: Record<string, unknown> = {};
+    if (params?.eventId) {
+      options.event_id = params.eventId;
+    }
+
+    window.ttq!.track('ViewContent', trackParams, Object.keys(options).length > 0 ? options : undefined);
+  }
+
+  /**
+   * Track TikTok Lead event
+   */
+  private trackTikTokLead(params?: {
+    contentId?: string;
+    contentType?: string;
+    contentName?: string;
+    value?: number;
+    currency?: string;
+    eventId?: string;
+  }): void {
+    if (!this.isTikTokAvailable()) return;
+
+    const contents = params?.contentId ? [{
+      content_id: params.contentId,
+      content_type: params.contentType || 'product',
+      content_name: params.contentName || '',
+    }] : [];
+
+    const trackParams: Record<string, unknown> = {};
+    if (contents.length > 0) {
+      trackParams.contents = contents;
+    }
+    if (params?.value !== undefined) {
+      trackParams.value = params.value;
+    }
+    if (params?.currency) {
+      trackParams.currency = params.currency;
+    }
+
+    const options: Record<string, unknown> = {};
+    if (params?.eventId) {
+      options.event_id = params.eventId;
+    }
+
+    window.ttq!.track('Lead', trackParams, Object.keys(options).length > 0 ? options : undefined);
+  }
+
+  /**
+   * Track TikTok Contact event
+   */
+  private trackTikTokContact(params?: {
+    contentId?: string;
+    contentType?: string;
+    contentName?: string;
+    value?: number;
+    currency?: string;
+    eventId?: string;
+  }): void {
+    if (!this.isTikTokAvailable()) return;
+
+    const contents = params?.contentId ? [{
+      content_id: params.contentId,
+      content_type: params.contentType || 'product',
+      content_name: params.contentName || '',
+    }] : [];
+
+    const trackParams: Record<string, unknown> = {};
+    if (contents.length > 0) {
+      trackParams.contents = contents;
+    }
+    if (params?.value !== undefined) {
+      trackParams.value = params.value;
+    }
+    if (params?.currency) {
+      trackParams.currency = params.currency;
+    }
+
+    const options: Record<string, unknown> = {};
+    if (params?.eventId) {
+      options.event_id = params.eventId;
+    }
+
+    window.ttq!.track('Contact', trackParams, Object.keys(options).length > 0 ? options : undefined);
+  }
+
+  /**
+   * Track TikTok ClickButton event
+   */
+  private trackTikTokClickButton(params?: {
+    contentId?: string;
+    contentType?: string;
+    contentName?: string;
+    value?: number;
+    currency?: string;
+    eventId?: string;
+  }): void {
+    if (!this.isTikTokAvailable()) return;
+
+    const contents = params?.contentId ? [{
+      content_id: params.contentId,
+      content_type: params.contentType || 'product',
+      content_name: params.contentName || '',
+    }] : [];
+
+    const trackParams: Record<string, unknown> = {};
+    if (contents.length > 0) {
+      trackParams.contents = contents;
+    }
+    if (params?.value !== undefined) {
+      trackParams.value = params.value;
+    }
+    if (params?.currency) {
+      trackParams.currency = params.currency;
+    }
+
+    const options: Record<string, unknown> = {};
+    if (params?.eventId) {
+      options.event_id = params.eventId;
+    }
+
+    window.ttq!.track('ClickButton', trackParams, Object.keys(options).length > 0 ? options : undefined);
+  }
+
   // ============================================
   // Predefined Events - Add your events here
   // ============================================
@@ -85,6 +246,12 @@ class AnalyticsService {
    */
   trackHomePageViewed(): void {
     this.trackCustom('HomePageViewed');
+    // TikTok: Track as ViewContent
+    this.trackTikTokViewContent({
+      contentId: 'home',
+      contentType: 'product',
+      contentName: 'Home Page',
+    });
   }
 
   /**
@@ -92,6 +259,12 @@ class AnalyticsService {
    */
   trackEngagementPageViewed(): void {
     this.trackCustom('EngagementPageViewed');
+    // TikTok: Track as ViewContent
+    this.trackTikTokViewContent({
+      contentId: 'engage',
+      contentType: 'product',
+      contentName: 'Engagement Page',
+    });
   }
 
   /**
@@ -99,6 +272,12 @@ class AnalyticsService {
    */
   trackClaimPageViewed(): void {
     this.trackCustom('ClaimPageViewed');
+    // TikTok: Track as ViewContent
+    this.trackTikTokViewContent({
+      contentId: 'claim',
+      contentType: 'product',
+      contentName: 'Claim Page',
+    });
   }
 
   /**
@@ -106,6 +285,12 @@ class AnalyticsService {
    */
   trackOnboardingPageViewed(): void {
     this.trackCustom('OnboardingPageViewed');
+    // TikTok: Track as ViewContent
+    this.trackTikTokViewContent({
+      contentId: 'onboarding',
+      contentType: 'product',
+      contentName: 'Onboarding Page',
+    });
   }
 
   /**
@@ -113,16 +298,34 @@ class AnalyticsService {
    */
   trackSwapViewed(): void {
     this.trackCustom('SwapViewed');
+    // TikTok: Track as ViewContent
+    this.trackTikTokViewContent({
+      contentId: 'swap',
+      contentType: 'product',
+      contentName: 'Swap Page',
+    });
   }
 
   /**
    * Track successful engagement reward claim
    */
   trackEngagement(params?: EngagementEventParams): void {
+    const eventId = params?.transactionHash || `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+    
     this.trackCustom('EngagementRewardClaimed', {
       value: 3000,
       currency: 'G$',
       ...params,
+    });
+    
+    // TikTok: Track as Lead (conversion event)
+    this.trackTikTokLead({
+      contentId: 'engagement_reward',
+      contentType: 'product',
+      contentName: 'Engagement Reward Claim',
+      value: 0.3,
+      currency: 'USD',
+      eventId: eventId,
     });
   }
 
@@ -130,10 +333,22 @@ class AnalyticsService {
    * Track successful engagement reward claim from Facebook ad
    */
   trackEngagementFromAd(params?: EngagementEventParams): void {
+    const eventId = params?.transactionHash || `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+    
     this.trackCustom('EngagementRewardClaimedFromAd', {
       value: 3000,
       currency: 'G$',
       ...params,
+    });
+    
+    // TikTok: Track as Lead (conversion event from ad)
+    this.trackTikTokLead({
+      contentId: 'engagement_reward_ad',
+      contentType: 'product',
+      contentName: 'Engagement Reward Claim From Ad',
+      value: 0.3,
+      currency: 'USD',
+      eventId: eventId,
     });
   }
 
@@ -141,9 +356,22 @@ class AnalyticsService {
    * Track successful UBI claim
    */
   trackUBIClaim(params?: ClaimEventParams): void {
+    const eventId = params?.transactionHash || `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+    const amount = params?.amount ? parseFloat(params.amount) : undefined;
+    
     this.trackCustom('UBIClaimed', {
       currency: 'G$',
       ...params,
+    });
+    
+    // TikTok: Track as Lead (conversion event)
+    this.trackTikTokLead({
+      contentId: 'ubi_claim',
+      contentType: 'product',
+      contentName: 'UBI Claim',
+      value: amount ? amount * 0.0001 : undefined,
+      currency: 'USD',
+      eventId: eventId,
     });
   }
 
@@ -151,8 +379,18 @@ class AnalyticsService {
    * Track wallet verification completion
    */
   trackVerification(params?: VerificationEventParams): void {
+    const eventId = `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+    
     this.trackCustom('WalletVerified', {
       ...params,
+    });
+    
+    // TikTok: Track as Contact (user completed verification/contact form equivalent)
+    this.trackTikTokContact({
+      contentId: 'wallet_verification',
+      contentType: 'product',
+      contentName: 'Wallet Verification',
+      eventId: eventId,
     });
   }
 }
