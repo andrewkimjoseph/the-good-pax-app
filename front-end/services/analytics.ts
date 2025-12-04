@@ -1,10 +1,12 @@
 /**
- * Analytics Service for Meta Pixel and TikTok Pixel
+ * Analytics Service for Meta Pixel, TikTok Pixel, and Vercel Analytics
  * 
  * Usage:
  *   import { analytics } from '@/services/analytics';
  *   analytics.trackEngagement({ transactionHash: '0x...' });
  */
+
+import { track } from '@vercel/analytics';
 
 // Extend Window interface for fbq and ttq
 declare global {
@@ -252,6 +254,8 @@ class AnalyticsService {
       contentType: 'product',
       contentName: 'Home Page',
     });
+    // Vercel: Track home page view
+    track('HomePageViewed', {});
   }
 
   /**
@@ -265,6 +269,8 @@ class AnalyticsService {
       contentType: 'product',
       contentName: 'Engagement Page',
     });
+    // Vercel: Track engagement page view
+    track('EngagementPageViewed', {});
   }
 
   /**
@@ -278,6 +284,8 @@ class AnalyticsService {
       contentType: 'product',
       contentName: 'Claim Page',
     });
+    // Vercel: Track claim page view
+    track('ClaimPageViewed', {});
   }
 
   /**
@@ -291,6 +299,8 @@ class AnalyticsService {
       contentType: 'product',
       contentName: 'Onboarding Page',
     });
+    // Vercel: Track onboarding page view
+    track('OnboardingPageViewed', {});
   }
 
   /**
@@ -304,6 +314,8 @@ class AnalyticsService {
       contentType: 'product',
       contentName: 'Swap Page',
     });
+    // Vercel: Track swap page view
+    track('SwapViewed', {});
   }
 
   /**
@@ -327,6 +339,9 @@ class AnalyticsService {
       currency: 'USD',
       eventId: eventId,
     });
+    
+    // Vercel: Track engagement reward claim
+    track('EngagementRewardClaimed', {});
   }
 
   /**
@@ -350,6 +365,9 @@ class AnalyticsService {
       currency: 'USD',
       eventId: eventId,
     });
+    
+    // Vercel: Track engagement reward claim from ad
+    track('EngagementRewardClaimedFromAd', {});
   }
 
   /**
@@ -373,6 +391,9 @@ class AnalyticsService {
       currency: 'USD',
       eventId: eventId,
     });
+    
+    // Vercel: Track UBI claim
+    track('UBIClaimed', {});
   }
 
   /**
@@ -392,6 +413,9 @@ class AnalyticsService {
       contentName: 'Wallet Verification',
       eventId: eventId,
     });
+    
+    // Vercel: Track wallet verification
+    track('WalletVerified', {});
   }
 }
 
