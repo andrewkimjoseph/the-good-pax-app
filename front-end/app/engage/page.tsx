@@ -171,7 +171,7 @@ const ProductionRewardsEngagementButton = () => {
           Engagement Rewards
         </h2>
         <p className="text-sm text-gray-600">
-          Claim your 3,000 G$ engagement rewards
+          Claim your 3,000 G$ Engagement Rewards
         </p>
       </div>
 
@@ -181,7 +181,7 @@ const ProductionRewardsEngagementButton = () => {
             Program Temporarily Paused
           </p>
           <p className="text-xs text-yellow-700">
-            The engagement rewards program is currently paused. Please check back soon.
+            The Engagement Rewards program is currently paused. Please check back soon.
           </p>
         </div>
         
