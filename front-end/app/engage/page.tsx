@@ -175,20 +175,22 @@ const ProductionRewardsEngagementButton = () => {
         </p>
       </div>
 
-      <div className="w-full flex justify-center">
+      <div className="w-full flex flex-col items-center gap-4">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 w-full text-center">
+          <p className="text-sm font-medium text-yellow-800 mb-1">
+            Program Temporarily Paused
+          </p>
+          <p className="text-xs text-yellow-700">
+            The engagement rewards program is currently paused. Please check back soon.
+          </p>
+        </div>
+        
         <Button
           onClick={handleClaim}
-          disabled={!isConnected || isLoading}
+          disabled={true}
           className="w-full text-sm px-6 py-3"
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="animate-spin" />
-              Processing...
-            </>
-          ) : (
-            "Claim 3K G$ NOW!"
-          )}
+          Claim 3K G$ NOW!
         </Button>
       </div>
 
