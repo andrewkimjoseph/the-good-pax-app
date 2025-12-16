@@ -1,5 +1,5 @@
 /**
- * Analytics Service for Meta Pixel, TikTok Pixel, and Vercel Analytics
+ * Analytics Service for Meta Pixel, TikTok Pixel, Vercel Analytics, and PostHog
  * 
  * Usage:
  *   import { analytics } from '@/services/analytics';
@@ -7,6 +7,7 @@
  */
 
 import { track } from '@vercel/analytics';
+import posthog from 'posthog-js';
 
 // Extend Window interface for fbq and ttq
 declare global {
@@ -63,6 +64,25 @@ class AnalyticsService {
   private isTikTokAvailable(): boolean {
     if (typeof window === 'undefined') return false;
     return typeof window.ttq !== 'undefined' && typeof window.ttq?.track === 'function';
+  }
+
+  private isPostHogAvailable(): boolean {
+    if (typeof window === 'undefined') return false;
+    return typeof posthog !== 'undefined' && typeof posthog.capture === 'function';
+  }
+
+  /**
+   * Track a PostHog event
+   */
+  private trackPostHog(eventName: string, properties?: Record<string, unknown>): void {
+    if (this.isPostHogAvailable()) {
+      try {
+        posthog.capture(eventName, properties);
+      } catch (error) {
+        // Silently fail if PostHog is not ready
+        console.debug('PostHog capture failed:', error);
+      }
+    }
   }
 
   /**
@@ -256,6 +276,8 @@ class AnalyticsService {
     });
     // Vercel: Track home page view
     track('HomePageViewed', {});
+    // PostHog: Track home page view
+    this.trackPostHog('HomePageViewed', {});
   }
 
   /**
@@ -271,6 +293,8 @@ class AnalyticsService {
     });
     // Vercel: Track engagement page view
     track('EngagementPageViewed', {});
+    // PostHog: Track engagement page view
+    this.trackPostHog('EngagementPageViewed', {});
   }
 
   /**
@@ -286,6 +310,8 @@ class AnalyticsService {
     });
     // Vercel: Track claim page view
     track('ClaimPageViewed', {});
+    // PostHog: Track claim page view
+    this.trackPostHog('ClaimPageViewed', {});
   }
 
   /**
@@ -301,6 +327,8 @@ class AnalyticsService {
     });
     // Vercel: Track onboarding page view
     track('OnboardingPageViewed', {});
+    // PostHog: Track onboarding page view
+    this.trackPostHog('OnboardingPageViewed', {});
   }
 
   /**
@@ -316,6 +344,8 @@ class AnalyticsService {
     });
     // Vercel: Track swap page view
     track('SwapViewed', {});
+    // PostHog: Track swap page view
+    this.trackPostHog('SwapViewed', {});
   }
 
   /**
@@ -342,6 +372,15 @@ class AnalyticsService {
     
     // Vercel: Track engagement reward claim
     track('EngagementRewardClaimed', {});
+    
+    // PostHog: Track engagement reward claim
+    this.trackPostHog('EngagementRewardClaimed', {
+      transactionHash: params?.transactionHash,
+      amount: params?.amount || '3000',
+      success: params?.success ?? true,
+      currency: 'G$',
+      value: 3000,
+    });
   }
 
   /**
@@ -368,6 +407,17 @@ class AnalyticsService {
     
     // Vercel: Track engagement reward claim from ad
     track('EngagementRewardClaimedFromAd', {});
+    
+    // PostHog: Track engagement reward claim from ad
+    this.trackPostHog('EngagementRewardClaimedFromAd', {
+      transactionHash: params?.transactionHash,
+      amount: params?.amount || '3000',
+      success: params?.success ?? true,
+      currency: 'G$',
+      value: 3000,
+      fbclid: params?.fbclid,
+      source: 'facebook_ad',
+    });
   }
 
   /**
@@ -394,6 +444,15 @@ class AnalyticsService {
     
     // Vercel: Track UBI claim
     track('UBIClaimed', {});
+    
+    // PostHog: Track UBI claim
+    this.trackPostHog('UBIClaimed', {
+      transactionHash: params?.transactionHash,
+      amount: params?.amount,
+      tokenSymbol: params?.tokenSymbol || 'G$',
+      currency: 'G$',
+      value: amount,
+    });
   }
 
   /**
@@ -416,6 +475,12 @@ class AnalyticsService {
     
     // Vercel: Track wallet verification
     track('WalletVerified', {});
+    
+    // PostHog: Track wallet verification
+    this.trackPostHog('WalletVerified', {
+      walletAddress: params?.walletAddress,
+      isVerified: params?.isVerified ?? true,
+    });
   }
 }
 

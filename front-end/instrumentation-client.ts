@@ -2,6 +2,16 @@
 // The added config here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
+import posthog from "posthog-js";
+
+posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+  api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "/ingest",
+  ui_host: "https://us.posthog.com",
+  defaults: '2025-11-30',
+  capture_exceptions: true, // This enables capturing exceptions using Error Tracking, set to false if you don't want this
+  debug: process.env.NODE_ENV === "development",
+});
+
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
