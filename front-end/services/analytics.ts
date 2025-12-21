@@ -50,6 +50,12 @@ interface VerificationEventParams {
   isVerified?: boolean;
 }
 
+interface FailedEventParams {
+  errorMessage?: string;
+  errorCode?: string;
+  walletAddress?: string;
+}
+
 class AnalyticsService {
   private isFacebookAvailable(): boolean {
     if (typeof window === 'undefined') return false;
@@ -480,6 +486,88 @@ class AnalyticsService {
     this.trackPostHog('WalletVerified', {
       walletAddress: params?.walletAddress,
       isVerified: params?.isVerified ?? true,
+    });
+  }
+
+  // ============================================
+  // Failure Events
+  // ============================================
+
+  /**
+   * Track failed engagement reward claim
+   */
+  trackEngagementFailed(params?: FailedEventParams): void {
+    this.trackCustom('EngagementRewardClaimFailed', {
+      ...params,
+    });
+    
+    // Vercel: Track engagement reward claim failure
+    track('EngagementRewardClaimFailed', {});
+    
+    // PostHog: Track engagement reward claim failure
+    this.trackPostHog('EngagementRewardClaimFailed', {
+      errorMessage: params?.errorMessage,
+      errorCode: params?.errorCode,
+      walletAddress: params?.walletAddress,
+    });
+  }
+
+  /**
+   * Track failed engagement reward claim from Facebook ad
+   */
+  trackEngagementFromAdFailed(params?: FailedEventParams & { fbclid?: string }): void {
+    this.trackCustom('EngagementRewardClaimFromAdFailed', {
+      ...params,
+    });
+    
+    // Vercel: Track engagement reward claim from ad failure
+    track('EngagementRewardClaimFromAdFailed', {});
+    
+    // PostHog: Track engagement reward claim from ad failure
+    this.trackPostHog('EngagementRewardClaimFromAdFailed', {
+      errorMessage: params?.errorMessage,
+      errorCode: params?.errorCode,
+      walletAddress: params?.walletAddress,
+      fbclid: params?.fbclid,
+      source: 'facebook_ad',
+    });
+  }
+
+  /**
+   * Track failed UBI claim
+   */
+  trackUBIClaimFailed(params?: FailedEventParams): void {
+    this.trackCustom('UBIClaimFailed', {
+      ...params,
+    });
+    
+    // Vercel: Track UBI claim failure
+    track('UBIClaimFailed', {});
+    
+    // PostHog: Track UBI claim failure
+    this.trackPostHog('UBIClaimFailed', {
+      errorMessage: params?.errorMessage,
+      errorCode: params?.errorCode,
+      walletAddress: params?.walletAddress,
+    });
+  }
+
+  /**
+   * Track failed wallet verification
+   */
+  trackVerificationFailed(params?: FailedEventParams): void {
+    this.trackCustom('WalletVerificationFailed', {
+      ...params,
+    });
+    
+    // Vercel: Track wallet verification failure
+    track('WalletVerificationFailed', {});
+    
+    // PostHog: Track wallet verification failure
+    this.trackPostHog('WalletVerificationFailed', {
+      errorMessage: params?.errorMessage,
+      errorCode: params?.errorCode,
+      walletAddress: params?.walletAddress,
     });
   }
 }

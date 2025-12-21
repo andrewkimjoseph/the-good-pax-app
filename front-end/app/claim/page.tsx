@@ -194,12 +194,23 @@ const ClaimComponent = () => {
         // Transaction failed or reverted
         setStatus(`Claim failed: Transaction reverted. Transaction: ${r.transactionHash || 'Unknown'}`);
         setError('Transaction was reverted by the network');
+        // Track failed UBI claim
+        analytics.trackUBIClaimFailed({
+          errorMessage: 'Transaction reverted',
+          errorCode: 'TX_REVERTED',
+          walletAddress: userAddress,
+        });
       }
     } catch (error) {
       console.error('Claim failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       setStatus(`Claim failed: ${errorMessage}`);
       setError(errorMessage);
+      // Track failed UBI claim
+      analytics.trackUBIClaimFailed({
+        errorMessage: errorMessage,
+        walletAddress: userAddress,
+      });
     } finally {
       setIsLoading(false);
     }

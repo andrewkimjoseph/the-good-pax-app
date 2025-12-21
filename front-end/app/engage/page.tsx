@@ -122,6 +122,22 @@ const ProductionRewardsEngagementButton = () => {
         setStatus(
           `Claim failed: Transaction reverted. Transaction: ${receipt.transactionHash}`
         );
+        // Track failed engagement - use special event if from ad
+        const fbclidForError = getStoredFbclid();
+        if (fbclidForError) {
+          analytics.trackEngagementFromAdFailed({
+            errorMessage: 'Transaction reverted',
+            errorCode: 'TX_REVERTED',
+            walletAddress: userAddress,
+            fbclid: fbclidForError,
+          });
+        } else {
+          analytics.trackEngagementFailed({
+            errorMessage: 'Transaction reverted',
+            errorCode: 'TX_REVERTED',
+            walletAddress: userAddress,
+          });
+        }
       } else {
         setStatus(`Claim successful! Transaction: ${receipt.transactionHash}`);
         // Track successful engagement - use special event if from ad
@@ -153,9 +169,39 @@ const ProductionRewardsEngagementButton = () => {
 
       if (message.includes("Claim cooldown not reached")) {
         setStatus("You already claimed. Try again after the cooldown period.");
+        // Track cooldown failure - use special event if from ad
+        const fbclidForCooldown = getStoredFbclid();
+        if (fbclidForCooldown) {
+          analytics.trackEngagementFromAdFailed({
+            errorMessage: 'Claim cooldown not reached',
+            errorCode: 'COOLDOWN_NOT_REACHED',
+            walletAddress: userAddress,
+            fbclid: fbclidForCooldown,
+          });
+        } else {
+          analytics.trackEngagementFailed({
+            errorMessage: 'Claim cooldown not reached',
+            errorCode: 'COOLDOWN_NOT_REACHED',
+            walletAddress: userAddress,
+          });
+        }
         return;
       }
       setStatus(`Claim failed: ${message}`);
+      // Track general failure - use special event if from ad
+      const fbclidForError = getStoredFbclid();
+      if (fbclidForError) {
+        analytics.trackEngagementFromAdFailed({
+          errorMessage: message || 'Unknown error',
+          walletAddress: userAddress,
+          fbclid: fbclidForError,
+        });
+      } else {
+        analytics.trackEngagementFailed({
+          errorMessage: message || 'Unknown error',
+          walletAddress: userAddress,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
