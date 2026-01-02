@@ -208,7 +208,7 @@ const ProductionRewardsEngagementButton = () => {
   };
 
   const PROGRAM_ENDED = true;
-  const TOTAL_CLAIMS = 10000;
+  const MAX_REWARDS_REACHED = true;
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
@@ -225,7 +225,7 @@ const ProductionRewardsEngagementButton = () => {
               Program Ended
             </p>
             <p className="text-xs text-gray-500">
-              We've reached {TOTAL_CLAIMS.toLocaleString()} claims! Thank you for your participation.
+              The maximum rewards cap has been reached. Thank you for your participation!
             </p>
           </>
         ) : (
@@ -256,7 +256,7 @@ const ProductionRewardsEngagementButton = () => {
 
       {PROGRAM_ENDED && (
         <div className="text-xs p-3 rounded-md w-full text-center break-words overflow-wrap-anywhere bg-gray-100 text-gray-700 border border-gray-200">
-          The Engagement Rewards program has concluded after reaching {TOTAL_CLAIMS.toLocaleString()} total claims. We appreciate everyone who participated!
+          The Engagement Rewards program has concluded after reaching the maximum rewards cap. Even users who are past their 6-month cooldown period cannot claim additional rewards at this time. We appreciate everyone who participated!
         </div>
       )}
 
