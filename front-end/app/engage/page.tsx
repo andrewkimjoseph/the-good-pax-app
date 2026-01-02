@@ -207,24 +207,38 @@ const ProductionRewardsEngagementButton = () => {
     }
   };
 
+  const PROGRAM_ENDED = true;
+  const TOTAL_CLAIMS = 10000;
+
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
       <div className="text-center mb-6">
         <div className="mb-6 flex justify-center">
-          <Sparkles className="h-20 w-20 text-orange-500" />
+          <Sparkles className="h-20 w-20 text-gray-400" />
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Engagement Rewards
         </h2>
-        <p className="text-sm text-gray-600">
-          Claim your 3,000 G$ Engagement Rewards
-        </p>
+        {PROGRAM_ENDED ? (
+          <>
+            <p className="text-sm text-gray-600 mb-2">
+              Program Ended
+            </p>
+            <p className="text-xs text-gray-500">
+              We've reached {TOTAL_CLAIMS.toLocaleString()} claims! Thank you for your participation.
+            </p>
+          </>
+        ) : (
+          <p className="text-sm text-gray-600">
+            Claim your 3,000 G$ Engagement Rewards
+          </p>
+        )}
       </div>
 
       <div className="w-full flex justify-center">
         <Button
           onClick={handleClaim}
-          disabled={!isConnected || isLoading}
+          disabled={PROGRAM_ENDED || !isConnected || isLoading}
           className="w-full text-sm px-6 py-3"
         >
           {isLoading ? (
@@ -232,13 +246,21 @@ const ProductionRewardsEngagementButton = () => {
               <Loader2 className="animate-spin" />
               Processing...
             </>
+          ) : PROGRAM_ENDED ? (
+            "Program Ended"
           ) : (
             "Claim 3K G$ NOW!"
           )}
         </Button>
       </div>
 
-      {status && (
+      {PROGRAM_ENDED && (
+        <div className="text-xs p-3 rounded-md w-full text-center break-words overflow-wrap-anywhere bg-gray-100 text-gray-700 border border-gray-200">
+          The Engagement Rewards program has concluded after reaching {TOTAL_CLAIMS.toLocaleString()} total claims. We appreciate everyone who participated!
+        </div>
+      )}
+
+      {status && !PROGRAM_ENDED && (
         <div
           className={`text-xs p-3 rounded-md w-full text-center break-words overflow-wrap-anywhere ${
             status.includes("successful")
@@ -252,7 +274,7 @@ const ProductionRewardsEngagementButton = () => {
         </div>
       )}
 
-      {!isConnected && (
+      {!isConnected && !PROGRAM_ENDED && (
         <p className="text-sm text-gray-600 text-center">
           Connect your wallet to claim rewards
         </p>
