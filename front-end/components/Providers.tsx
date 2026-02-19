@@ -35,7 +35,7 @@ const connectors = connectorsForWallets(
   ],
   {
     appName: "The Good Pax App",
-    projectId: "7cd38e5b3ee172070ca8ce157688d9c9",
+    projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
   }
 );
 
