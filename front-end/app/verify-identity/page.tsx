@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useWalletVerification } from "@/services/checkWalletVerification";
 import { useAccount } from "wagmi";
@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function VerifyIdentityPage() {
+function VerifyIdentityContent() {
   const searchParams = useSearchParams();
   const { generateFVLink, sdkReady } = useWalletVerification();
   const { isConnected } = useAccount();
@@ -72,5 +72,20 @@ export default function VerifyIdentityPage() {
             : "Waiting for wallet…"}
       </p>
     </div>
+  );
+}
+
+export default function VerifyIdentityPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+          <p className="text-center text-lg text-gray-700">Loading…</p>
+        </div>
+      }
+    >
+      <VerifyIdentityContent />
+    </Suspense>
   );
 }
