@@ -70,7 +70,7 @@ function VerifyIdentityContent() {
     );
   }
 
-  // Returned from FV: show result (green check or amber warning) then allow going home
+  // Returned from FV: show result (green check or amber warning)
   if (isReturnFromFV && verificationSuccess !== null) {
     const success = verificationSuccess === true;
     return (
@@ -83,25 +83,27 @@ function VerifyIdentityContent() {
         <p className="text-center text-lg text-gray-700">
           {success
             ? "Verification completed successfully."
-            : "Verification didn’t go as expected. You can try again from home."}
+            : "Verification didn’t go as expected. You can try again."}
         </p>
-        <Link href="/">
-          <Button variant="outline">Back to home</Button>
-        </Link>
+        {!success && (
+          <Link href="/verify-identity">
+            <Button variant="outline">Retry</Button>
+          </Link>
+        )}
       </div>
     );
   }
 
-  // Decode failed or missing: show neutral/amber and go home
+  // Decode failed or missing: show amber and offer retry
   if (isReturnFromFV) {
     return (
       <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
         <AlertTriangle className="h-16 w-16 text-amber-500" aria-hidden />
         <p className="text-center text-lg text-gray-700">
-          We couldn’t determine your verification result. You can try again from home.
+          We couldn’t determine your verification result. You can try again.
         </p>
-        <Link href="/">
-          <Button variant="outline">Back to home</Button>
+        <Link href="/verify-identity">
+          <Button variant="outline">Retry</Button>
         </Link>
       </div>
     );

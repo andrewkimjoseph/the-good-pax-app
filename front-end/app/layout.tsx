@@ -6,6 +6,7 @@ import { Providers } from "@/components/Providers";
 import { ConditionalHeader } from "@/components/ConditionalHeader";
 // import { Footer } from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next"
+import { Navigation } from "@/components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

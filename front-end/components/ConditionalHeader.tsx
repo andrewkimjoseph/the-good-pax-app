@@ -8,7 +8,7 @@ export function ConditionalHeader() {
   const pathname = usePathname();
   
   // Don't show header on onboarding page
-  if (pathname === "/onboarding") {
+  if (pathname === "/onboarding" || pathname === "/verify-identity") {
     return null;
   }
   
