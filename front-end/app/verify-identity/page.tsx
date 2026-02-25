@@ -1,12 +1,22 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useWalletVerification } from "@/services/checkWalletVerification";
 import { useAccount } from "wagmi";
 import Link from "next/link";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+function decodeVerifiedParam(encoded: string | null): boolean | null {
+  if (encoded == null || encoded === "") return null;
+  try {
+    const decoded = atob(encoded);
+    return decoded === "true" || decoded === "1";
+  } catch {
+    return null;
+  }
+}
 
 function VerifyIdentityContent() {
   const searchParams = useSearchParams();
@@ -16,9 +26,14 @@ function VerifyIdentityContent() {
   const isReady = isConnected && sdkReady;
 
   // Return from FV flow: already verified, don't create another link
-  const verified = searchParams.get("verified");
+  const verifiedParam = searchParams.get("verified");
   const chain = searchParams.get("chain");
-  const isReturnFromFV = verified != null && chain != null;
+  const isReturnFromFV = verifiedParam != null && chain != null;
+
+  const verificationSuccess = useMemo(
+    () => (isReturnFromFV ? decodeVerifiedParam(verifiedParam) : null),
+    [isReturnFromFV, verifiedParam]
+  );
 
   useEffect(() => {
     if (!isReady || isReturnFromFV) return;
@@ -43,12 +58,6 @@ function VerifyIdentityContent() {
     };
   }, [generateFVLink, isReady, isReturnFromFV]);
 
-  // Returned from FV with verified + chain → redirect to home
-  useEffect(() => {
-    if (!isReturnFromFV) return;
-    window.location.href = "/";
-  }, [isReturnFromFV]);
-
   if (error) {
     return (
       <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
@@ -61,15 +70,50 @@ function VerifyIdentityContent() {
     );
   }
 
+  // Returned from FV: show result (green check or amber warning) then allow going home
+  if (isReturnFromFV && verificationSuccess !== null) {
+    const success = verificationSuccess === true;
+    return (
+      <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
+        {success ? (
+          <CheckCircle className="h-16 w-16 text-green-500" aria-hidden />
+        ) : (
+          <AlertTriangle className="h-16 w-16 text-amber-500" aria-hidden />
+        )}
+        <p className="text-center text-lg text-gray-700">
+          {success
+            ? "Verification completed successfully."
+            : "Verification didn’t go as expected. You can try again from home."}
+        </p>
+        <Link href="/">
+          <Button variant="outline">Back to home</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Decode failed or missing: show neutral/amber and go home
+  if (isReturnFromFV) {
+    return (
+      <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
+        <AlertTriangle className="h-16 w-16 text-amber-500" aria-hidden />
+        <p className="text-center text-lg text-gray-700">
+          We couldn’t determine your verification result. You can try again from home.
+        </p>
+        <Link href="/">
+          <Button variant="outline">Back to home</Button>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
       <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
       <p className="text-center text-lg text-gray-700">
-        {isReturnFromFV
-          ? "Taking you back…"
-          : isReady
-            ? "Redirecting to GoodDollar Identity"
-            : "Waiting for wallet…"}
+        {isReady
+          ? "Redirecting to GoodDollar Identity"
+          : "Waiting for wallet…"}
       </p>
     </div>
   );
