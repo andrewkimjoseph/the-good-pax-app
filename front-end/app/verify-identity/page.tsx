@@ -75,14 +75,19 @@ function VerifyIdentityContent() {
     const success = verificationSuccess === true;
     return (
       <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
-        {success ? (
-          <CheckCircle className="h-16 w-16 text-green-500" aria-hidden />
-        ) : (
-          <AlertTriangle className="h-16 w-16 text-amber-500" aria-hidden />
-        )}
+        <div className="flex flex-col items-center gap-4">
+          {success ? (
+            <>
+              <CheckCircle className="h-16 w-16 text-green-500" aria-hidden />
+              <Loader2 className="h-6 w-6 animate-spin text-blue-500" aria-hidden />
+            </>
+          ) : (
+            <AlertTriangle className="h-16 w-16 text-amber-500" aria-hidden />
+          )}
+        </div>
         <p className="text-center text-lg text-gray-700">
           {success
-            ? "Verification completed successfully."
+            ? "Verification completed successfully. Please do not close this window until your verification is fully confirmed."
             : "Verification didn’t go as expected. You can try again."}
         </p>
         {!success && (

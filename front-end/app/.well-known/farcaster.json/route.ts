@@ -15,9 +15,9 @@ export async function GET() {
       "imageUrl": "https://thegoodpax.app/thegoodpaxapp.png",
       "splashImageUrl": "https://thegoodpax.app/thegoodpaxapp.png",
       "splashBackgroundColor": "#f5f0ec",
-      "subtitle": "Claim UBI on Farcaster",
+      "subtitle": "Canvassing x GoodDollar",
       "heroImageUrl": "https://thegoodpax.app/thegoodpaxapp.png",
-      "description": "The Good Pax App bring GoodDollar UBI claiming and Engagement Rewards, right in Farcaster. Powered by Canvassing.",
+      "description": "Claim daily GoodDollar UBI and explore Pax tasks—where Canvassing meets GoodDollar.",
       "primaryCategory": "finance"
     }
   };

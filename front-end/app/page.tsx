@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import Image from "next/image";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle, AlertCircle, Loader2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,7 +62,7 @@ export default function Home() {
             Welcome to The Good Pax App
           </h1>
           <p className="text-lg text-gray-600 mb-2">
-            Claim 3,000 G$ (0.3 USD) and UBI here!
+            Where Canvassing (Pax) and GoodDollar meet.
           </p>
           <Link href={appendFbclidToUrl("/onboarding")}>
             <Button
@@ -72,6 +72,36 @@ export default function Home() {
               ℹ️ What is this? Learn more
             </Button>
           </Link>
+        </div>
+
+        {/* Pax CTA */}
+        <div className="w-full max-w-md bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg p-5 shadow-md border border-orange-100 text-center">
+          <p className="text-sm text-gray-700 leading-relaxed">
+            Use <span className="font-semibold text-gray-900">Pax</span> to complete tasks and earn{" "}
+            <span className="font-semibold text-gray-900">G$</span> and stablecoins.
+          </p>
+          <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href="https://thepax.site"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="outline" className="w-full sm:w-auto">
+                Visit Pax (Web)
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </Button>
+            </a>
+            <a
+              href="https://thepax.app/thegoodpaxapp"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="w-full sm:w-auto">
+                Get Pax (Android)
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </Button>
+            </a>
+          </div>
         </div>
         {isConnected ? (
           <div className="flex flex-col items-center gap-3">
@@ -108,17 +138,6 @@ export default function Home() {
                     Claim UBI (Every day)
                   </Button>
                 </Link>
-                <Link href={appendFbclidToUrl("/engage")}>
-                  <Button
-                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #FF9C4C 0%, #FF5C86 100%)",
-                    }}
-                  >
-                    Engage (Every 180 days)
-                  </Button>
-                </Link>
                 <a
                   href="https://gooddapp.org/#/swap/celoReserve"
                   target="_blank"
@@ -136,6 +155,13 @@ export default function Home() {
                     <ExternalLink className="ml-2 h-5 w-5" />
                   </Button>
                 </a>
+
+                {/* Engagement Rewards (Ended) */}
+                <Link href={appendFbclidToUrl("/engage")}>
+                  <Button variant="outline" className="w-full">
+                    Engagement rewards (ended)
+                  </Button>
+                </Link>
               </div>
             )}
             {!verificationStatus.isVerified &&
@@ -216,14 +242,6 @@ export default function Home() {
             </p> */}
           </div>
         )}
-        
-        {/* Pax Information - shown after buttons */}
-        <div className="mt-4 text-center">
-          <p className="text-md text-gray-600">
-            Also, check out Pax (Android and Web) where you can complete tasks and earn G$ and
-            stablecoins. <br /> <br />Download / visit Pax below! 👇
-          </p>
-        </div>
       </div>
     </div>
   );

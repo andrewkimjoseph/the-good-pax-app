@@ -1,26 +1,35 @@
 # The Good Pax App
 
-A decentralized application (dApp) for claiming Universal Basic Income (UBI) and engagement rewards on the GoodDollar protocol, built on the Celo blockchain. The Good Pax App enables users to claim free cryptocurrency daily and earn rewards for engaging with the platform.
+The place where **Canvassing (Pax)** and **GoodDollar** meet.
 
-## 🎯 Overview
+A decentralized application (dApp) for claiming Universal Basic Income (UBI) on the GoodDollar protocol, built on the Celo blockchain. The Good Pax App helps verified humans claim daily **G$**, and discover **Pax**—where users can complete tasks and earn **G$ and stablecoins**.
+
+## Overview
 
 The Good Pax App is your gateway to Universal Basic Income (UBI) on the Celo blockchain. It's a user-friendly web application that allows verified users to:
 
 - **Claim Daily UBI**: Get free G$ (GoodDollar) tokens every single day
-- **Earn Engagement Rewards**: Claim 3,000 G$ (0.3 USD) every 180 days for platform engagement
+- **Pax (Canvassing)**: Complete tasks and earn G$ and stablecoins
 - **Swap Tokens**: Exchange G$ tokens for other cryptocurrencies
 - **Human Verification**: Secure facial verification ensures one person = one account
+
+### Pax links
+
+- Pax Web: https://thepax.site
+- Pax Android: https://thepax.app/thegoodpaxapp
 
 ## 🚀 Features
 
 ### Core Functionality
 
 - **Daily UBI Claims**: Users can claim their Universal Basic Income daily after completing verification
-- **Engagement Rewards**: One-time claim of 3,000 G$ every 180 days (6 months cooldown period)
+- **Pax (Canvassing)**: Discover Pax and complete tasks to earn G$ and stablecoins
 - **Wallet Integration**: Support for multiple wallets including MetaMask, WalletConnect, Valora, Rabby, and injected wallets
 - **Human Verification**: Integration with GoodDollar's identity verification system to prevent abuse
 - **Farcaster MiniApp**: Native integration with Farcaster for seamless social media experience
 - **Transaction Notifications**: Real-time transaction status updates via BlockScout integration
+
+> Note: the historical engagement rewards program has ended (cap reached). The `/engage` route is kept as an informational page.
 
 ### Technical Features
 
@@ -43,7 +52,6 @@ The Good Pax App is your gateway to Universal Basic Income (UBI) on the Celo blo
 - **Blockchain Client**: Viem 2.37.1
 - **GoodDollar SDKs**:
   - `@goodsdks/citizen-sdk`: ^1.2.2 (UBI claiming)
-  - `@goodsdks/engagement-sdk`: ^1.0.1 (Engagement rewards)
   - `@goodsdks/identity-sdk`: ^1.0.5 (Human verification)
 - **Analytics**: PostHog, Vercel Analytics, Meta Pixel, TikTok Pixel
 - **Error Tracking**: Sentry (@sentry/nextjs)
@@ -57,10 +65,10 @@ the-good-pax-app/
 │   ├── app/                    # Next.js App Router pages
 │   │   ├── page.tsx           # Home page
 │   │   ├── claim/             # UBI claiming page
-│   │   ├── engage/            # Engagement rewards page
+│   │   ├── engage/            # Engagement program ended (info)
 │   │   ├── onboarding/        # User onboarding flow
 │   │   ├── api/               # API routes
-│   │   │   └── getAppSignature/  # Backend signature generation
+│   │   │   └── getAppSignature/  # (Legacy) signature generation
 │   │   └── .well-known/       # Farcaster configuration
 │   ├── components/            # React components
 │   │   ├── ui/                # Reusable UI components
@@ -129,11 +137,11 @@ Create a `.env.local` file in the `front-end/` directory with the following vari
 ```env
 # App Configuration
 NEXT_PUBLIC_APP_ADDRESS=0x...          # Your app's Ethereum address
-NEXT_PUBLIC_INVITER_ADDRESS=0x...      # Inviter address for engagement rewards
+NEXT_PUBLIC_INVITER_ADDRESS=0x...      # (Legacy) inviter address (engagement)
 
-# Backend API (for signature generation)
+# (Legacy) Backend API for engagement signatures
 APP_PRIVATE_KEY=0x...                   # Private key for app signature (server-side only)
-REWARDS_CONTRACT=0x...                  # Engagement rewards contract address
+REWARDS_CONTRACT=0x...                  # Rewards contract address
 
 # Blockchain RPC
 NEXT_PUBLIC_DRPC_API_KEY=your_drpc_key # DRPC API key for Celo RPC
@@ -169,7 +177,7 @@ SENTRY_PROJECT=thegoodpaxapp
 3. **Connect wallet**: Click to connect your Web3 wallet (MetaMask, Valora, etc.)
 4. **Get verified**: Complete facial verification to prove you're human
 5. **Claim UBI**: Once verified, claim your daily UBI from the home page
-6. **Engage**: Claim engagement rewards (3,000 G$) every 180 days
+6. **Explore Pax**: Complete tasks in Pax and earn G$ and stablecoins
 7. **Swap tokens**: Exchange G$ for other cryptocurrencies via the swap link
 
 ### For Developers
@@ -198,11 +206,11 @@ npm run test:browserstack
 - **`/`**: Home page with wallet connection and main actions
 - **`/onboarding`**: First-time user onboarding flow
 - **`/claim`**: Daily UBI claiming interface
-- **`/engage`**: Engagement rewards claiming (180-day cooldown)
+- **`/engage`**: Engagement rewards program ended (info)
 
 #### API Routes
 
-- **`/api/getAppSignature`**: POST endpoint for generating app signatures for engagement rewards
+- **`/api/getAppSignature`**: (Legacy) POST endpoint for generating app signatures (engagement)
   - Requires: `user`, `validUntilBlock`, `inviter` (optional)
   - Returns: `signature` (hex string)
 
@@ -213,14 +221,7 @@ npm run test:browserstack
 1. User connects wallet
 2. App checks verification status via GoodDollar Identity SDK
 3. If not verified, user is redirected to complete facial verification
-4. Once verified, user can claim UBI and engagement rewards
-
-### Engagement Rewards Security
-
-- **Cooldown Period**: 180 days (6 months) between claims
-- **Signature Verification**: Both user and app signatures required
-- **Block Validation**: Signatures are valid for a limited number of blocks
-- **Transaction Reversion Checks**: App verifies transaction success on-chain
+4. Once verified, user can claim UBI
 
 ## 📊 Analytics & Tracking
 
@@ -230,7 +231,7 @@ The app includes comprehensive analytics tracking:
 
 - **Page Views**: Home, Claim, Engage, Onboarding
 - **User Actions**: Wallet connections, verification completions
-- **Transactions**: UBI claims, engagement rewards, failures
+- **Transactions**: UBI claims (and historical engagement events)
 - **Ad Attribution**: Facebook Click ID (fbclid) tracking for ad campaigns
 
 ### Analytics Providers
@@ -253,7 +254,6 @@ All analytics events are tracked via the centralized `analytics` service in `ser
 ### Smart Contracts
 
 - **GoodDollar Protocol**: UBI distribution contract
-- **Engagement Rewards Contract**: Custom rewards contract (address in env vars)
 - **Identity Contract**: Human verification contract
 
 ### Wallet Support
@@ -374,11 +374,10 @@ For issues, questions, or contributions:
 
 ## 🔄 Version History
 
-- **v1.1.4** (Current): Latest stable release
-  - Engagement rewards program ended (max cap reached)
-  - Improved analytics tracking
-  - Enhanced error handling
-  - Facebook ad attribution support
+- **v1.2.0** (Current)
+  - Pivot to Canvassing (Pax) x GoodDollar hub
+  - Engagement rewards program ended; `/engage` is informational
+  - Updated onboarding + home messaging
 
 ## 🗺️ Roadmap
 
@@ -386,9 +385,7 @@ Future enhancements may include:
 
 - [ ] Multi-chain support
 - [ ] Enhanced analytics dashboard
-- [ ] Mobile app version
 - [ ] Social features and referrals
-- [ ] Additional reward mechanisms
 - [ ] Improved UI/UX based on user feedback
 
 ---

@@ -55,9 +55,11 @@ export default function OnboardingPage() {
           <p className="text-gray-700 leading-relaxed">
             The Good Pax App is a decentralized application (dApp) built on{" "}
             <span className="font-semibold text-blue-600">GoodDollar</span>, 
-            enabling you to claim free cryptocurrency daily and earn rewards 
-            for engaging with the platform. It&apos;s real money, real crypto, 
-            and it&apos;s designed to help everyone participate in the digital economy.
+            enabling you to claim free cryptocurrency daily, and connecting you
+            to <span className="font-semibold text-gray-900">Pax</span>—where you can complete
+            tasks and earn <span className="font-semibold text-gray-900">G$</span> and stablecoins.
+            It&apos;s real money, real crypto, and it&apos;s designed to help everyone participate
+            in the digital economy.
           </p>
         </div>
 
@@ -86,7 +88,7 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            {/* Feature 2: Engagement Rewards */}
+            {/* Feature 2: Pax Tasks */}
             <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
@@ -94,11 +96,11 @@ export default function OnboardingPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-800 mb-1">
-                    Earn 3,000 G$ Rewards
+                    Use Pax for Tasks
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Engage with the platform and claim 3,000 G$ (0.3 USD) 
-                    every 180 days. That&apos;s on top of your daily UBI!
+                    Pax is where Canvassing meets GoodDollar: complete real-world tasks
+                    and earn G$ and stablecoins.
                   </p>
                 </div>
               </div>
@@ -159,7 +161,7 @@ export default function OnboardingPage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="font-bold text-orange-600 flex-shrink-0">3.</span>
-              <span>Start claiming your daily UBI and engagement rewards!</span>
+              <span>Start claiming your daily UBI and explore Pax tasks!</span>
             </li>
           </ol>
         </div>
