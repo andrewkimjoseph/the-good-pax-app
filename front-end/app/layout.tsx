@@ -4,7 +4,6 @@ import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Providers } from "@/components/Providers";
 import { ConditionalHeader } from "@/components/ConditionalHeader";
-import { Footer } from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
@@ -97,7 +96,6 @@ export default function RootLayout({
               <ConditionalHeader />
               <div className="pb-32">{children}</div>
             </Providers>
-            <Footer />
           </div>
         </div>
         <Analytics />
