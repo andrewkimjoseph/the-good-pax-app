@@ -87,7 +87,7 @@ function VerifyIdentityContent() {
         </div>
         <p className="text-center text-lg text-gray-700">
           {success
-            ? "Verification completed successfully. Please do not close this window until your verification is fully confirmed."
+            ? "Verification completed successfully. Please do not close this window until your verification is fully confirmed - be patient!"
             : "Verification didn’t go as expected. You can try again."}
         </p>
         {!success && (
