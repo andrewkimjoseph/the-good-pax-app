@@ -36,6 +36,25 @@ export default function ClaimPage() {
 }
 
 const ClaimComponent = () => {
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) {
+    return (
+      <div className="flex flex-col items-center gap-3 w-full max-w-sm mx-auto">
+        <FontAwesomeIcon icon={faSpinner} spin className="h-6 w-6 text-blue-500" />
+        <p className="text-sm text-gray-600">Loading claim page...</p>
+      </div>
+    );
+  }
+
+  return <ClaimContent />;
+};
+
+const ClaimContent = () => {
   const { address: userAddress, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
