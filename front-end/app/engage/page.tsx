@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useEffect } from "react";
-import { ExternalLink, Sparkles } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpRightFromSquare, faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@/components/ui/button";
 import { analytics } from "@/services/analytics";
@@ -27,7 +28,7 @@ export default function EngagePage() {
         <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
           <div className="text-center mb-2">
             <div className="mb-6 flex justify-center">
-              <Sparkles className="h-20 w-20 text-gray-400" />
+              <FontAwesomeIcon icon={faWandMagicSparkles} className="h-20 w-20 text-gray-400" />
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
               Engagement Rewards
@@ -51,7 +52,7 @@ export default function EngagePage() {
               rel="noopener noreferrer"
             >
               <Button variant="outline" className="w-full">
-                Visit Pax (Web) <ExternalLink className="ml-2 h-4 w-4" />
+                Visit Pax (Web) <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="ml-2 h-4 w-4" />
               </Button>
             </a>
             <a
@@ -60,7 +61,7 @@ export default function EngagePage() {
               rel="noopener noreferrer"
             >
               <Button className="w-full">
-                Get Pax (Android) <ExternalLink className="ml-2 h-4 w-4" />
+                Get Pax (Android) <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="ml-2 h-4 w-4" />
               </Button>
             </a>
           </div>

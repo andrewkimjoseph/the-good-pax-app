@@ -2,7 +2,15 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Gift, Sparkles, CheckCircle, Users, Coins, Shield } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faGift,
+  faWandMagicSparkles,
+  faCircleCheck,
+  faUsers,
+  faCoins,
+  faShieldHalved,
+} from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { analytics } from "@/services/analytics";
 import { getFbclid, appendFbclidToUrl } from "@/services/fbclid";
@@ -49,7 +57,7 @@ export default function OnboardingPage() {
         {/* What is this? */}
         <div className="w-full max-w-md bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 shadow-md border border-blue-100">
           <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <Coins className="h-6 w-6 text-blue-600" />
+            <FontAwesomeIcon icon={faCoins} className="h-6 w-6 text-blue-600" />
             What is this?
           </h2>
           <p className="text-gray-700 leading-relaxed">
@@ -74,7 +82,7 @@ export default function OnboardingPage() {
             <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
-                  <Gift className="h-8 w-8 text-green-500" />
+                  <FontAwesomeIcon icon={faGift} className="h-8 w-8 text-green-500" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-800 mb-1">
@@ -92,7 +100,7 @@ export default function OnboardingPage() {
             <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
-                  <Sparkles className="h-8 w-8 text-orange-500" />
+                  <FontAwesomeIcon icon={faWandMagicSparkles} className="h-8 w-8 text-orange-500" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-800 mb-1">
@@ -110,7 +118,7 @@ export default function OnboardingPage() {
             <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
-                  <Shield className="h-8 w-8 text-purple-500" />
+                  <FontAwesomeIcon icon={faShieldHalved} className="h-8 w-8 text-purple-500" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-800 mb-1">
@@ -128,7 +136,7 @@ export default function OnboardingPage() {
             <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
-                  <Users className="h-8 w-8 text-blue-500" />
+                  <FontAwesomeIcon icon={faUsers} className="h-8 w-8 text-blue-500" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-800 mb-1">
@@ -147,7 +155,7 @@ export default function OnboardingPage() {
         {/* How it works */}
         <div className="w-full max-w-md bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg p-6 shadow-md border border-orange-100">
           <h2 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <CheckCircle className="h-6 w-6 text-orange-600" />
+            <FontAwesomeIcon icon={faCircleCheck} className="h-6 w-6 text-orange-600" />
             How to Get Started
           </h2>
           <ol className="space-y-2 text-gray-700">

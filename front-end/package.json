@@ -13,6 +13,9 @@
   "dependencies": {
     "@blockscout/app-sdk": "^0.1.2",
     "@farcaster/miniapp-sdk": "^0.1.10",
+    "@fortawesome/fontawesome-svg-core": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@fortawesome/react-fontawesome": "^3.3.1",
     "@goodsdks/citizen-sdk": "^1.2.3",
     "@goodsdks/engagement-sdk": "^1.0.1",
     "@goodsdks/identity-sdk": "^1.0.5",
@@ -25,7 +28,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.24",
-    "lucide-react": "^0.542.0",
     "next": "15.5.9",
     "posthog-js": "^1.306.2",
     "posthog-node": "^5.17.2",

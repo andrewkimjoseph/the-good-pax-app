@@ -5,7 +5,13 @@ import { useSearchParams } from "next/navigation";
 import { useWalletVerification } from "@/services/checkWalletVerification";
 import { useAccount } from "wagmi";
 import Link from "next/link";
-import { Loader2, AlertCircle, CheckCircle, AlertTriangle } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSpinner,
+  faCircleExclamation,
+  faCircleCheck,
+  faTriangleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 
 function decodeVerifiedParam(encoded: string | null): boolean | null {
@@ -61,7 +67,7 @@ function VerifyIdentityContent() {
   if (error) {
     return (
       <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
-        <AlertCircle className="h-12 w-12 text-red-500" />
+        <FontAwesomeIcon icon={faCircleExclamation} className="h-12 w-12 text-red-500" />
         <p className="text-center text-gray-700">{error}</p>
         <Link href="/">
           <Button variant="outline">Back to home</Button>
@@ -78,11 +84,11 @@ function VerifyIdentityContent() {
         <div className="flex flex-col items-center gap-4">
           {success ? (
             <>
-              <CheckCircle className="h-16 w-16 text-green-500" aria-hidden />
-              <Loader2 className="h-6 w-6 animate-spin text-blue-500" aria-hidden />
+              <FontAwesomeIcon icon={faCircleCheck} className="h-16 w-16 text-green-500" aria-hidden />
+              <FontAwesomeIcon icon={faSpinner} spin className="h-6 w-6 text-blue-500" aria-hidden />
             </>
           ) : (
-            <AlertTriangle className="h-16 w-16 text-amber-500" aria-hidden />
+            <FontAwesomeIcon icon={faTriangleExclamation} className="h-16 w-16 text-amber-500" aria-hidden />
           )}
         </div>
         <p className="text-center text-lg text-gray-700">
@@ -103,7 +109,7 @@ function VerifyIdentityContent() {
   if (isReturnFromFV) {
     return (
       <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
-        <AlertTriangle className="h-16 w-16 text-amber-500" aria-hidden />
+        <FontAwesomeIcon icon={faTriangleExclamation} className="h-16 w-16 text-amber-500" aria-hidden />
         <p className="text-center text-lg text-gray-700">
           We couldn’t determine your verification result. You can try again.
         </p>
@@ -116,7 +122,7 @@ function VerifyIdentityContent() {
 
   return (
     <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
-      <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+      <FontAwesomeIcon icon={faSpinner} spin className="h-12 w-12 text-blue-500" />
       <p className="text-center text-lg text-gray-700">
         {isReady
           ? "Redirecting to GoodDollar Identity"
@@ -131,7 +137,7 @@ export default function VerifyIdentityPage() {
     <Suspense
       fallback={
         <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+          <FontAwesomeIcon icon={faSpinner} spin className="h-12 w-12 text-blue-500" />
           <p className="text-center text-lg text-gray-700">Loading…</p>
         </div>
       }

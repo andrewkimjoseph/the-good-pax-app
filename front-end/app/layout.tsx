@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Sen } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -6,8 +6,8 @@ import { Providers } from "@/components/Providers";
 import { ConditionalHeader } from "@/components/ConditionalHeader";
 import { Analytics } from "@vercel/analytics/next"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sen = Sen({
+  variable: "--font-sen",
   subsets: ["latin"],
 });
 
@@ -44,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${sen.variable} ${geistMono.variable} font-sans antialiased`}
         style={{
           background: "linear-gradient(90deg, #FF9C4C 0%, #FF5C86 100%)",
           minHeight: "100vh",

@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { useAccount, useWalletClient, usePublicClient, useChainId } from "wagmi";
 import Link from "next/link";
-import { Loader2, CheckCircle, AlertCircle, Gift } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner, faCircleCheck, faCircleExclamation, faGift } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { IdentitySDK, ClaimSDK } from '@goodsdks/citizen-sdk';
 import { TransactionReceipt } from "viem";
@@ -229,7 +230,7 @@ const ClaimComponent = () => {
     <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto">
       <div className="text-center mb-6">
         <div className="mb-6 flex justify-center">
-          <Gift className="h-20 w-20 text-blue-500" />
+          <FontAwesomeIcon icon={faGift} className="h-20 w-20 text-blue-500" />
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Claim Your UBI
@@ -243,11 +244,11 @@ const ClaimComponent = () => {
       <div className="w-full">
         <div className="flex items-center justify-center gap-3 mb-4">
           {isCheckingEntitlement ? (
-            <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+            <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-blue-500" />
           ) : hasEntitlement ? (
-            <CheckCircle className="h-5 w-5 text-green-500" />
+            <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5 text-green-500" />
           ) : (
-            <AlertCircle className="h-5 w-5 text-orange-500" />
+            <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-orange-500" />
           )}
           <span className="text-sm text-gray-600">
             {isCheckingEntitlement
@@ -284,7 +285,7 @@ const ClaimComponent = () => {
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <FontAwesomeIcon icon={faSpinner} spin className="mr-2 h-4 w-4" />
               Processing...
             </>
           ) : !isConnected ? (

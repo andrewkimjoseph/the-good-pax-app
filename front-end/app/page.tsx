@@ -3,7 +3,13 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { CheckCircle, AlertCircle, Loader2, ExternalLink } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleCheck,
+  faCircleExclamation,
+  faSpinner,
+  faArrowUpRightFromSquare,
+} from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import {
   useWalletVerification,
@@ -88,7 +94,7 @@ export default function Home() {
             >
               <Button variant="outline" className="w-full sm:w-auto">
                 Visit Pax (Web)
-                <ExternalLink className="ml-2 h-4 w-4" />
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="ml-2 h-4 w-4" />
               </Button>
             </a>
             <a
@@ -98,7 +104,7 @@ export default function Home() {
             >
               <Button className="w-full sm:w-auto">
                 Get Pax (Android)
-                <ExternalLink className="ml-2 h-4 w-4" />
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="ml-2 h-4 w-4" />
               </Button>
             </a>
           </div>
@@ -107,14 +113,14 @@ export default function Home() {
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-2">
               {verificationStatus.loading ? (
-                <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-blue-500" />
               ) : verificationStatus.isVerified ? (
                 <div title="Verified wallet">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5 text-green-500" />
                 </div>
               ) : (
                 <div title="Unverified wallet">
-                  <AlertCircle className="h-5 w-5 text-orange-500" />
+                  <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-orange-500" />
                 </div>
               )}
               <span className="text-sm text-gray-600">
@@ -152,7 +158,7 @@ export default function Home() {
                     }}
                   >
                     Swap your G$ (All day)
-                    <ExternalLink className="ml-2 h-5 w-5" />
+                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="ml-2 h-5 w-5" />
                   </Button>
                 </a>
 
@@ -197,7 +203,7 @@ export default function Home() {
                 >
                   {isGeneratingLink || verificationStatus.isRedirecting ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <FontAwesomeIcon icon={faSpinner} spin className="mr-2 h-4 w-4" />
                       {isGeneratingLink ? "Preparing..." : "Redirecting..."}
                     </>
                   ) : (
@@ -211,19 +217,19 @@ export default function Home() {
             <div className="flex items-center justify-center gap-2 mb-6">
               <p className="text-lg text-gray-500 flex items-center gap-2">
                 Connect your wallet to continue
-                <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                <FontAwesomeIcon icon={faSpinner} spin className="h-4 w-4 text-gray-400" />
               </p>
               {isConnected && (
                 <div className="flex items-center">
                   {verificationStatus.loading ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                    <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-blue-500" />
                   ) : verificationStatus.isVerified ? (
                     <div title="Verified wallet">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5 text-green-500" />
                     </div>
                   ) : isConnected ? (
                     <div title="Unverified wallet">
-                      <AlertCircle className="h-5 w-5 text-orange-500" />
+                      <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-orange-500" />
                     </div>
                   ) : null}
                 </div>
