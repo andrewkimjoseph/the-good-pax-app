@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAccount, useChainId } from "wagmi";
@@ -26,6 +26,14 @@ type EligibilityResponse = {
 type PrecheckState = "idle" | "checking" | "eligible" | "ineligible" | "error";
 
 export default function EngagePage() {
+  return (
+    <Suspense fallback={<EngagePageLoadingState />}>
+      <EngagePageContent />
+    </Suspense>
+  );
+}
+
+function EngagePageContent() {
   const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
   const participantId = useMemo(
@@ -65,6 +73,34 @@ export default function EngagePage() {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function EngagePageLoadingState() {
+  return (
+    <div className="font-sans flex flex-col min-h-screen p-6 gap-8">
+      <div className="w-full flex justify-start items-center pt-8">
+        <Link href={appendFbclidToUrl("/")}>
+          <Button variant="outline" size="sm">← Back to Home</Button>
+        </Link>
+      </div>
+      <div className="flex-1 flex items-start justify-center pt-12">
+        <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
+          <div className="text-center mb-6">
+            <div className="mb-6 flex justify-center">
+              <FontAwesomeIcon
+                icon={faWandMagicSparkles}
+                className="h-20 w-20 text-orange-500"
+              />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              Engagement Rewards
+            </h2>
+            <p className="text-sm text-gray-600">Loading...</p>
+          </div>
+        </div>
       </div>
     </div>
   );
