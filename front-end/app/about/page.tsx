@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { analytics } from "@/services/analytics";
 import { getFbclid, appendFbclidToUrl } from "@/services/fbclid";
 
-export default function OnboardingPage() {
+export default function AboutPage() {
   const router = useRouter();
 
   // Track page view on mount and capture fbclid
@@ -62,9 +62,9 @@ export default function OnboardingPage() {
           </h2>
           <p className="text-gray-700 leading-relaxed">
             The Good Pax App is a decentralized application (dApp) built on{" "}
-            <span className="font-semibold text-blue-600">GoodDollar</span>, 
+            <span className="font-semibold text-blue-600">GoodDollar</span>,
             enabling you to claim free cryptocurrency daily, and connecting you
-            to <span className="font-semibold text-gray-900">Pax</span>—where you can complete
+            to <span className="font-semibold text-gray-900">Pax</span>-where you can complete
             tasks and earn <span className="font-semibold text-gray-900">G$</span> and stablecoins.
             It&apos;s real money, real crypto, and it&apos;s designed to help everyone participate
             in the digital economy.
@@ -76,7 +76,7 @@ export default function OnboardingPage() {
           <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
             What You Can Do
           </h2>
-          
+
           <div className="space-y-4">
             {/* Feature 1: Daily UBI */}
             <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
@@ -89,8 +89,8 @@ export default function OnboardingPage() {
                     Claim Daily UBI
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Get free G$ (GoodDollar) tokens every single day. 
-                    No catch, no tricks—just free money for being human!
+                    Get free G$ (GoodDollar) tokens every single day.
+                    No catch, no tricks-just free money for being human!
                   </p>
                 </div>
               </div>
@@ -125,7 +125,7 @@ export default function OnboardingPage() {
                     Verified & Secure
                   </h3>
                   <p className="text-sm text-gray-600">
-                    We use facial verification to ensure one person = one account. 
+                    We use facial verification to ensure one person = one account.
                     This keeps the system fair and prevents abuse.
                   </p>
                 </div>
@@ -143,7 +143,7 @@ export default function OnboardingPage() {
                     Join a Global Movement
                   </h3>
                   <p className="text-sm text-gray-600">
-                    You&apos;re joining thousands of people worldwide who believe 
+                    You&apos;re joining thousands of people worldwide who believe
                     everyone deserves access to basic income and financial freedom.
                   </p>
                 </div>
@@ -185,15 +185,7 @@ export default function OnboardingPage() {
           >
             Get Started Now! 🚀
           </Button>
-          
-          {/* <Button
-            onClick={handleGetStarted}
-            variant="ghost"
-            className="w-full text-sm px-6 py-2 text-gray-600 hover:text-gray-800"
-          >
-            Skip for now
-          </Button> */}
-          
+
           <p className="text-xs text-center text-gray-500 mt-2">
             By continuing, you agree to participate in the GoodDollar ecosystem
           </p>
@@ -211,4 +203,3 @@ export default function OnboardingPage() {
     </div>
   );
 }
-

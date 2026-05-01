@@ -8,7 +8,6 @@ import {
   faCircleCheck,
   faCircleExclamation,
   faSpinner,
-  faArrowUpRightFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -70,7 +69,7 @@ export default function Home() {
           <p className="text-lg text-gray-600 mb-2">
             Where Canvassing (Pax) and GoodDollar meet.
           </p>
-          <Link href={appendFbclidToUrl("/onboarding")}>
+          <Link href={appendFbclidToUrl("/about")}>
             <Button
               variant="outline"
               className="mt-4 text-sm px-6 py-2"
@@ -80,7 +79,7 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Pax CTA */}
+        {/* Pax CTA
         <div className="w-full max-w-md bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg p-5 shadow-md border border-orange-100 text-center">
           <p className="text-sm text-gray-700 leading-relaxed">
             Use <span className="font-semibold text-gray-900">Pax</span> to complete tasks and earn{" "}
@@ -109,6 +108,7 @@ export default function Home() {
             </a>
           </div>
         </div>
+        */}
         {isConnected ? (
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ export default function Home() {
             </div>
             {verificationStatus.isVerified && !verificationStatus.loading && !verificationStatus.isRedirecting && (
               <div className="flex flex-col gap-3 w-full max-w-xs">
-                <Link href={appendFbclidToUrl("/claim")}>
+                <Link href={appendFbclidToUrl("/claim")} className="block w-full">
                   <Button
                     className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
                     style={{
@@ -144,10 +144,9 @@ export default function Home() {
                     Claim UBI (Every day)
                   </Button>
                 </Link>
-                <a
-                  href="https://gooddapp.org/#/swap/celoReserve"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href={appendFbclidToUrl("/swap")}
+                  className="block w-full"
                   onClick={() => analytics.trackSwapViewed()}
                 >
                   <Button
@@ -158,16 +157,21 @@ export default function Home() {
                     }}
                   >
                     Swap your G$ (All day)
-                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="ml-2 h-5 w-5" />
-                  </Button>
-                </a>
-
-                {/* Engagement Rewards (Ended) */}
-                <Link href={appendFbclidToUrl("/engage")}>
-                  <Button variant="outline" className="w-full">
-                    Engagement rewards (ended)
                   </Button>
                 </Link>
+
+                <Link href={appendFbclidToUrl("/engage")} className="block w-full">
+                  <Button
+                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #FF9C4C 0%, #FF7A00 100%)",
+                    }}
+                  >
+                    Engage (One time)
+                  </Button>
+                </Link>
+
               </div>
             )}
             {!verificationStatus.isVerified &&
@@ -185,7 +189,7 @@ export default function Home() {
                         isRedirecting: true 
                       }));
                       // Keep redirecting state active since user will be navigated away
-                    } catch (error) {
+                    } catch {
                       // Only reset if link generation failed
                       setIsGeneratingLink(false);
                       setVerificationStatus((prev) => ({ 
@@ -248,6 +252,7 @@ export default function Home() {
             </p> */}
           </div>
         )}
+
       </div>
     </div>
   );
