@@ -29,7 +29,7 @@ The Good Pax App is your gateway to Universal Basic Income (UBI) on the Celo blo
 - **Farcaster MiniApp**: Native integration with Farcaster for seamless social media experience
 - **Transaction Notifications**: Real-time transaction status updates via BlockScout integration
 
-> Note: the historical engagement rewards program has ended (cap reached). The `/engage` route is kept as an informational page.
+> Note: engagement rewards are active again. The `/engage` route now requires `participantId` and validates eligibility against Pax Firestore before allowing claims.
 
 ### Technical Features
 
@@ -137,11 +137,17 @@ Create a `.env.local` file in the `front-end/` directory with the following vari
 ```env
 # App Configuration
 NEXT_PUBLIC_APP_ADDRESS=0x...          # Your app's Ethereum address
-NEXT_PUBLIC_INVITER_ADDRESS=0x...      # (Legacy) inviter address (engagement)
+NEXT_PUBLIC_CANVASSING_BUSINESS_ADDRESS=0x...  # Business address used for engagement claims
 
 # (Legacy) Backend API for engagement signatures
 APP_PRIVATE_KEY=0x...                   # Private key for app signature (server-side only)
+APP_ADDRESS=0x...                       # App address for engagement signatures
 REWARDS_CONTRACT=0x...                  # Rewards contract address
+
+# Pax Firebase Admin (server-side eligibility checks)
+PAX_FIREBASE_PROJECT_ID=your_project_id
+PAX_FIREBASE_CLIENT_EMAIL=firebase-adminsdk-...@....iam.gserviceaccount.com
+PAX_FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 
 # Blockchain RPC
 NEXT_PUBLIC_DRPC_API_KEY=your_drpc_key # DRPC API key for Celo RPC
@@ -204,15 +210,18 @@ npm run test:browserstack
 #### Key Pages
 
 - **`/`**: Home page with wallet connection and main actions
-- **`/onboarding`**: First-time user onboarding flow
+- **`/about`**: First-time user onboarding/about flow
 - **`/claim`**: Daily UBI claiming interface
-- **`/engage`**: Engagement rewards program ended (info)
+- **`/engage?participantId=...`**: Engagement rewards claim flow (eligibility-gated)
 
 #### API Routes
 
 - **`/api/getAppSignature`**: (Legacy) POST endpoint for generating app signatures (engagement)
-  - Requires: `user`, `validUntilBlock`, `inviter` (optional)
+  - Requires: `user`, `validUntilBlock`, `canvassingBusinessAddress` (optional)
   - Returns: `signature` (hex string)
+- **`/api/engagementRewards/eligibility`**: GET endpoint for engagement eligibility checks
+  - Requires query param: `participantId`
+  - Validates participant existence + v2 + pax wallet + valid completion + claimed reward
 
 ## 🔐 Security & Verification
 
@@ -376,7 +385,7 @@ For issues, questions, or contributions:
 
 - **v1.2.0** (Current)
   - Pivot to Canvassing (Pax) x GoodDollar hub
-  - Engagement rewards program ended; `/engage` is informational
+  - Engagement rewards route reactivated with Firestore-backed eligibility checks
   - Updated onboarding + home messaging
 
 ## 🗺️ Roadmap

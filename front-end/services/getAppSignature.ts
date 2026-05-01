@@ -2,7 +2,7 @@
 export async function getAppSignature(params: {
   user: string
   validUntilBlock: string
-  inviter: string
+  canvassingBusinessAddress: string
 }): Promise<string> {
   const response = await fetch('/api/getAppSignature', {
     method: 'POST',

@@ -88,7 +88,7 @@ function getEngagementRewardsSDK() {
 async function logSignatureRequest(data: {
   app: string
   user: string
-  inviter?: string
+  canvassingBusinessAddress?: string
   validUntilBlock: string
   signature: string
 }): Promise<void> {
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { user, validUntilBlock, inviter } = body
+    const { user, validUntilBlock, canvassingBusinessAddress } = body
 
     // Validate required parameters
     if (!user || !validUntilBlock) {
@@ -140,6 +140,17 @@ export async function POST(request: Request) {
       )
     }
 
+    if (
+      canvassingBusinessAddress &&
+      (!canvassingBusinessAddress.startsWith("0x") ||
+        canvassingBusinessAddress.length !== 42)
+    ) {
+      return NextResponse.json(
+        { error: "Invalid canvassingBusinessAddress format" },
+        { status: 400 }
+      );
+    }
+
     // Initialize and use SDK to prepare signature data
     const engagementRewards = getEngagementRewardsSDK()
     const { domain, types, message } = await engagementRewards.prepareAppSignature(
@@ -161,7 +172,7 @@ export async function POST(request: Request) {
     await logSignatureRequest({
       app: APP_ADDRESS,
       user,
-      inviter: inviter || '',
+      canvassingBusinessAddress: canvassingBusinessAddress || '',
       validUntilBlock,
       signature
     })
