@@ -52,10 +52,7 @@ export default function SwapPage() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <h2 className="text-2xl font-bold text-gray-800">Swap your G$</h2>
-        <p className="text-sm text-gray-600">
-          Use LI.FI to swap across chains from one place.
-        </p>
+        <h2 className="text-2xl font-bold text-gray-800">Swap your G$ for USDT</h2>
       </div>
 
       <div className="w-full">
