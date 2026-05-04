@@ -63,7 +63,7 @@ function EngagePageContent() {
               <div className="mb-6 flex justify-center">
                 <FontAwesomeIcon
                   icon={faWandMagicSparkles}
-                  className="h-20 w-20 text-orange-500"
+                  className="h-[100px] w-[100px] text-orange-500"
                 />
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -92,7 +92,7 @@ function EngagePageLoadingState() {
             <div className="mb-6 flex justify-center">
               <FontAwesomeIcon
                 icon={faWandMagicSparkles}
-                className="h-20 w-20 text-orange-500"
+                className="h-[100px] w-[100px] text-orange-500"
               />
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -305,7 +305,7 @@ function ProductionRewardsEngagementButton({
     <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
       <div className="text-center mb-6">
         <div className="mb-6 flex justify-center">
-          <FontAwesomeIcon icon={faWandMagicSparkles} className="h-20 w-20 text-orange-500" />
+          <FontAwesomeIcon icon={faWandMagicSparkles} className="h-[100px] w-[100px] text-orange-500" />
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Engagement Rewards

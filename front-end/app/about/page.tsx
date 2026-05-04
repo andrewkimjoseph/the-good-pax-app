@@ -41,8 +41,8 @@ export default function AboutPage() {
             <Image
               src="/thegoodpaxapp.svg"
               alt="The Good Pax App Logo"
-              width={120}
-              height={120}
+              width={100}
+              height={100}
               className="drop-shadow-lg"
             />
           </div>

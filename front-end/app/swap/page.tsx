@@ -2,6 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { LiFiWidget, WidgetSkeleton, type WidgetConfig } from "@lifi/widget";
 
 import { Button } from "@/components/ui/button";
@@ -52,7 +53,18 @@ export default function SwapPage() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <h2 className="text-2xl font-bold text-gray-800">Swap your G$ for USDT</h2>
+        <div className="mb-2 flex justify-center">
+          <Image
+            src="/thegoodpaxapp.svg"
+            alt="The Good Pax App Logo"
+            width={100}
+            height={100}
+            className="drop-shadow-lg"
+          />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 text-center">
+          Swap your G$ for USDT
+        </h2>
       </div>
 
       <div className="w-full">

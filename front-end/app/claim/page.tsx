@@ -249,7 +249,7 @@ const ClaimContent = () => {
     <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto">
       <div className="text-center mb-6">
         <div className="mb-6 flex justify-center">
-          <FontAwesomeIcon icon={faGift} className="h-20 w-20 text-blue-500" />
+          <FontAwesomeIcon icon={faGift} className="h-[100px] w-[100px] text-blue-500" />
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Claim Your UBI

@@ -49,6 +49,12 @@ const TOKENS: TokenInfo[] = [
   },
 ];
 
+const GOODDOLLAR_TOKEN =
+  TOKENS.find((t) => t.symbol === "G$") ?? TOKENS[0];
+const OTHER_BALANCE_TOKENS = TOKENS.filter(
+  (t) => t.address !== GOODDOLLAR_TOKEN.address
+);
+
 export function Header() {
   const { address, isConnected } = useAccount();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -61,12 +67,12 @@ export function Header() {
     <div className="fixed top-0 left-0 right-0 z-20 shadow-md">
       <div className="flex justify-center">
         <div className="w-full max-w-lg">
-          <Card className="rounded-none border-x-0 border-t-0 shadow-none">
-            <CardHeader className="pb-3">
+          <Card className="gap-0 rounded-none border-x-0 border-t-0 py-0 shadow-none">
+            <CardHeader className="gap-1 px-4 py-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FontAwesomeIcon icon={faWallet} className="w-5 h-5 text-primary" />
-                  <CardTitle className="text-base">My Balances</CardTitle>
+                  <FontAwesomeIcon icon={faWallet} className="h-4 w-4 text-primary" />
+                  <CardTitle className="text-sm font-semibold">My Balances</CardTitle>
                 </div>
                 <Button
                   variant="ghost"
@@ -81,7 +87,7 @@ export function Header() {
                   )}
                 </Button>
               </div>
-              <CardDescription className="text-xs">
+              <CardDescription className="text-[11px] leading-tight">
                 {address.slice(0, 6)}...{address.slice(-4)}
               </CardDescription>
             </CardHeader>
@@ -98,10 +104,17 @@ export function Header() {
                   }}
                   style={{ overflow: "hidden" }}
                 >
-                  <CardContent className="space-y-2">
-                    {TOKENS.map((token) => (
-                      <Balance key={token.address} token={token} />
-                    ))}
+                  <CardContent className="space-y-1.5 px-4 pb-2 pt-0">
+                    <Balance token={GOODDOLLAR_TOKEN} />
+                    <div className="flex gap-1.5">
+                      {OTHER_BALANCE_TOKENS.map((token) => (
+                        <Balance
+                          key={token.address}
+                          token={token}
+                          showLabel={false}
+                        />
+                      ))}
+                    </div>
                   </CardContent>
                 </motion.div>
               )}

@@ -7,7 +7,7 @@ import {
 
 export function Navigation() {
   return (
-    <div className="w-full flex justify-center p-6">
+    <div className="flex w-full justify-center px-4 py-2">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
