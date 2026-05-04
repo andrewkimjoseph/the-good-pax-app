@@ -7,6 +7,7 @@ import { LiFiWidget, WidgetSkeleton, type WidgetConfig } from "@lifi/widget";
 import { Button } from "@/components/ui/button";
 import { analytics } from "@/services/analytics";
 import { appendFbclidToUrl } from "@/services/fbclid";
+import { getTokenAddress } from "@/lib/utils";
 
 function subscribe() {
   return () => {};
@@ -30,6 +31,10 @@ export default function SwapPage() {
         borderRadius: "16px",
       },
     },
+    fromChain: 42220,
+    toChain: 42220,
+    fromToken: getTokenAddress("G$"),
+    toToken: getTokenAddress("USDT"),
   };
 
   useEffect(() => {
