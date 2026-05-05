@@ -97,7 +97,7 @@ export default function AboutPage() {
             </div>
 
             {/* Feature 2: Pax Tasks */}
-            <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+            {/* <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
                   <FontAwesomeIcon icon={faWandMagicSparkles} className="h-8 w-8 text-orange-500" />
@@ -112,7 +112,7 @@ export default function AboutPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Feature 3: Human Verification */}
             <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
