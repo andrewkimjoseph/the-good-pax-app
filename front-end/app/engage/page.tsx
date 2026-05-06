@@ -14,16 +14,25 @@ import { getAppSignature } from "@/services/getAppSignature";
 import { analytics } from "@/services/analytics";
 import { getFbclid, getStoredFbclid, appendFbclidToUrl } from "@/services/fbclid";
 
+// Engagement page flow:
+// 1) Parse participantId from URL query params.
+// 2) Run backend eligibility precheck and show a user-friendly status.
+// 3) Only enable claim once precheck passes and wallet/sdk are ready.
+// 4) Execute signed claim flow and track analytics outcomes.
 const APP_ADDRESS = process.env.NEXT_PUBLIC_APP_ADDRESS as `0x${string}`;
 const CANVASSING_BUSINESS_ADDRESS = process.env
   .NEXT_PUBLIC_CANVASSING_BUSINESS_ADDRESS as `0x${string}`;
+const WAND_ICON_CLASS = "h-[100px] w-[100px] text-orange-500";
 
+// Backend returns a compact response shape that works for both success and
+// ineligible states. `eligibleAt` is only included when cooldown has not lapsed.
 type EligibilityResponse = {
   eligible: boolean;
   participantExists: boolean;
   reasonCode: string;
   eligibleAt?: number;
 };
+// Precheck lifecycle for UX rendering and button gating.
 type PrecheckState = "idle" | "checking" | "eligible" | "ineligible" | "error";
 type Countdown = {
   hours: string;
@@ -32,6 +41,7 @@ type Countdown = {
 };
 
 function formatDuration(remainingMs: number): Countdown {
+  // Clamp at zero so minor timer drift never renders negative countdown values.
   const totalSeconds = Math.max(0, Math.floor(remainingMs / 1000));
   const hours = Math.floor(totalSeconds / 3600)
     .toString()
@@ -60,10 +70,12 @@ function useCountdown(eligibleAt?: number): Countdown | null {
       setRemaining(nextRemaining);
     };
 
+    // Update immediately to avoid a one-second blank before first interval tick.
     updateRemaining();
     const timer = window.setInterval(updateRemaining, 1000);
 
     return () => {
+      // Cleanup prevents leaking intervals after unmount/re-render.
       window.clearInterval(timer);
     };
   }, [eligibleAt]);
@@ -75,7 +87,74 @@ function useCountdown(eligibleAt?: number): Countdown | null {
   return formatDuration(remaining);
 }
 
+function getPrecheckBannerClass(state: PrecheckState): string {
+  if (state === "eligible") {
+    return "bg-green-100 text-green-800 border border-green-200";
+  }
+
+  if (state === "ineligible" || state === "error") {
+    return "bg-red-100 text-red-800 border border-red-200";
+  }
+
+  return "bg-blue-100 text-blue-800 border border-blue-200";
+}
+
+function getStatusBannerClass(status: string): string {
+  if (status.includes("successful")) {
+    return "bg-green-100 text-green-800 border border-green-200";
+  }
+
+  if (status.includes("failed") || status.includes("error")) {
+    return "bg-red-100 text-red-800 border border-red-200";
+  }
+
+  return "bg-blue-100 text-blue-800 border border-blue-200";
+}
+
+function PrecheckBanner({
+  state,
+  message,
+  reasonCode,
+  countdown,
+}: {
+  state: PrecheckState;
+  message: string;
+  reasonCode: string;
+  countdown: Countdown | null;
+}) {
+  return (
+    <div
+      className={`text-xs p-3 rounded-md w-full text-center break-words overflow-wrap-anywhere ${getPrecheckBannerClass(
+        state
+      )}`}
+    >
+      {message}
+      {state === "ineligible" &&
+        reasonCode === "NO_VALID_TASK_COMPLETION" &&
+        countdown && (
+          <p className="mt-2 font-semibold">
+            {countdown.hours}:{countdown.minutes}:{countdown.seconds} until
+            eligible
+          </p>
+        )}
+    </div>
+  );
+}
+
+function StatusBanner({ status }: { status: string }) {
+  return (
+    <div
+      className={`text-xs p-3 rounded-md w-full text-center break-words overflow-wrap-anywhere ${getStatusBannerClass(
+        status
+      )}`}
+    >
+      {status}
+    </div>
+  );
+}
+
 export default function EngagePage() {
+  // `useSearchParams` in App Router should be wrapped in Suspense.
   return (
     <Suspense fallback={<EngagePageLoadingState />}>
       <EngagePageContent />
@@ -86,6 +165,7 @@ export default function EngagePage() {
 function EngagePageContent() {
   const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
+  // Guard query param reads to post-mount to avoid hydration mismatch.
   const participantId = useMemo(
     () => (isMounted ? searchParams.get("participantId")?.trim() || "" : ""),
     [isMounted, searchParams]
@@ -113,7 +193,7 @@ function EngagePageContent() {
               <div className="mb-6 flex justify-center">
                 <FontAwesomeIcon
                   icon={faWandMagicSparkles}
-                  className="h-[100px] w-[100px] text-orange-500"
+                  className={WAND_ICON_CLASS}
                 />
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -142,7 +222,7 @@ function EngagePageLoadingState() {
             <div className="mb-6 flex justify-center">
               <FontAwesomeIcon
                 icon={faWandMagicSparkles}
-                className="h-[100px] w-[100px] text-orange-500"
+                className={WAND_ICON_CLASS}
               />
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -157,12 +237,10 @@ function EngagePageLoadingState() {
 }
 
 const statusByReasonCode: Record<string, string> = {
-  MISSING_PARTICIPANT_ID: "Missing participantId. Please use a valid engage link.",
-  PARTICIPANT_NOT_FOUND: "Participant not found in Pax.",
-  NOT_V2_USER: "This participant is not a v2 user yet.",
-  MISSING_PAX_WALLET: "This participant does not have a pax_wallet yet.",
-  NO_VALID_TASK_COMPLETION: "No valid task completion found for this participant.",
-  NO_CLAIMED_REWARD: "No claimed reward found for this participant.",
+  // Keep raw backend reason codes out of user-facing UI copy.
+  MISSING_PARTICIPANT_ID: "Your id is missing. Please use a valid link from Pax.",
+  PARTICIPANT_NOT_FOUND: "It seems you are not registered on Pax yet.",
+  NO_VALID_TASK_COMPLETION: "No valid task completion found for you on Pax.",
 };
 
 function ProductionRewardsEngagementButton({
@@ -181,6 +259,8 @@ function ProductionRewardsEngagementButton({
   const [status, setStatus] = useState<string>("");
   const [precheckState, setPrecheckState] = useState<PrecheckState>("idle");
   const [precheckMessage, setPrecheckMessage] = useState<string>("");
+  // We store reason + eligibleAt separately so UI can show rich context
+  // (like countdown) without overloading the message string.
   const [precheckReasonCode, setPrecheckReasonCode] = useState<string>("");
   const [precheckEligibleAt, setPrecheckEligibleAt] = useState<number | undefined>(
     undefined
@@ -190,6 +270,8 @@ function ProductionRewardsEngagementButton({
       ? precheckEligibleAt
       : undefined
   );
+  // Claim is only possible after precheck confirms eligibility and all runtime
+  // dependencies are available.
   const canClaim =
     precheckState === "eligible" &&
     isConnected &&
@@ -203,6 +285,7 @@ function ProductionRewardsEngagementButton({
         targetParticipantId
       )}`
     );
+    // Backend can omit fields in error states, so we parse as Partial.
     const eligibility =
       (await eligibilityResponse.json()) as Partial<EligibilityResponse>;
     return { eligibilityResponse, eligibility };
@@ -259,6 +342,7 @@ function ProductionRewardsEngagementButton({
 
     runPrecheck();
     return () => {
+      // Prevent older async calls from mutating state after dependency changes.
       cancelled = true;
     };
   }, [participantId]);
@@ -290,6 +374,7 @@ function ProductionRewardsEngagementButton({
     setStatus("Checking engagement eligibility...");
 
     try {
+      // Re-run eligibility at click time to avoid stale page-level precheck.
       const { eligibilityResponse, eligibility } = await fetchEligibility(
         participantId
       );
@@ -304,6 +389,7 @@ function ProductionRewardsEngagementButton({
       }
 
       setStatus("User eligible, preparing claim...");
+      // Short block window keeps signatures fresh while allowing wallet signing.
       const currentBlock = await engagementRewards.getCurrentBlockNumber();
       const validUntilBlock = currentBlock + BigInt(20);
 
@@ -346,6 +432,7 @@ function ProductionRewardsEngagementButton({
 
       setStatus(`Claim successful! Transaction: ${receipt.transactionHash}`);
       const fbclid = getStoredFbclid();
+      // Distinguish ad-attributed conversions when fbclid exists.
       if (fbclid) {
         analytics.trackEngagementFromAd({
           transactionHash: receipt.transactionHash,
@@ -382,7 +469,10 @@ function ProductionRewardsEngagementButton({
     <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
       <div className="text-center mb-6">
         <div className="mb-6 flex justify-center">
-          <FontAwesomeIcon icon={faWandMagicSparkles} className="h-[100px] w-[100px] text-orange-500" />
+          <FontAwesomeIcon
+            icon={faWandMagicSparkles}
+            className={WAND_ICON_CLASS}
+          />
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Engagement Rewards
@@ -408,40 +498,15 @@ function ProductionRewardsEngagementButton({
       </div>
 
       {precheckState !== "idle" && (
-        <div
-          className={`text-xs p-3 rounded-md w-full text-center break-words overflow-wrap-anywhere ${
-            precheckState === "eligible"
-              ? "bg-green-100 text-green-800 border border-green-200"
-              : precheckState === "ineligible" || precheckState === "error"
-              ? "bg-red-100 text-red-800 border border-red-200"
-              : "bg-blue-100 text-blue-800 border border-blue-200"
-          }`}
-        >
-          {precheckMessage}
-          {precheckState === "ineligible" &&
-            precheckReasonCode === "NO_VALID_TASK_COMPLETION" &&
-            countdown && (
-              <p className="mt-2 font-semibold">
-                {countdown.hours}:{countdown.minutes}:{countdown.seconds} until
-                eligible
-              </p>
-            )}
-        </div>
+        <PrecheckBanner
+          state={precheckState}
+          message={precheckMessage}
+          reasonCode={precheckReasonCode}
+          countdown={countdown}
+        />
       )}
 
-      {status && (
-        <div
-          className={`text-xs p-3 rounded-md w-full text-center break-words overflow-wrap-anywhere ${
-            status.includes("successful")
-              ? "bg-green-100 text-green-800 border border-green-200"
-              : status.includes("failed") || status.includes("error")
-              ? "bg-red-100 text-red-800 border border-red-200"
-              : "bg-blue-100 text-blue-800 border border-blue-200"
-          }`}
-        >
-          {status}
-        </div>
-      )}
+      {status && <StatusBanner status={status} />}
 
       {!participantId && (
         <p className="text-sm text-gray-600 text-center">

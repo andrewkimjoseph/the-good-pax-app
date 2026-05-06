@@ -6,6 +6,7 @@ const COLLECTIONS = {
   PARTICIPANTS: "participants",
   TASK_COMPLETIONS: "task_completions",
 } as const;
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
 type EligibilityReason =
   | "MISSING_PARTICIPANT_ID"
@@ -13,9 +14,14 @@ type EligibilityReason =
   | "NO_VALID_TASK_COMPLETION"
   | "ELIGIBLE";
 
+function computeEligibleAt(timeCreated: Timestamp): number {
+  return timeCreated.toMillis() + TWENTY_FOUR_HOURS_MS;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    // Trim guards against accidental leading/trailing whitespace in links.
     const participantId = searchParams.get("participantId")?.trim();
 
     if (!participantId) {
@@ -29,6 +35,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // We verify participant existence first because all eligibility checks are scoped
+    // to a known participant in Pax.
     const participantDoc = await paxDB
       .collection(COLLECTIONS.PARTICIPANTS)
       .doc(participantId)
@@ -45,6 +53,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Fetch only the newest valid completion. If the latest valid item has already
+    // passed the 24-hour delay, older items are guaranteed to pass as well.
     const latestValidTaskCompletionSnapshot = await paxDB
       .collection(COLLECTIONS.TASK_COMPLETIONS)
       .where("participantId", "==", participantId)
@@ -66,6 +76,8 @@ export async function GET(request: NextRequest) {
 
     const latestValidTaskCompletion = latestValidTaskCompletionSnapshot.docs[0].data();
     const timeCreated = latestValidTaskCompletion.timeCreated;
+    // Firestore Admin should return Timestamp for Firestore timestamp fields.
+    // Keep this guard to avoid runtime crashes from malformed historical data.
     const isTimestamp = timeCreated instanceof Timestamp;
 
     if (!isTimestamp) {
@@ -79,7 +91,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const eligibleAt = timeCreated.toMillis() + 24 * 60 * 60 * 1000;
+    // Compute and return the exact unlock time so the client can render a live
+    // countdown without issuing additional API calls.
+    const eligibleAt = computeEligibleAt(timeCreated);
 
     if (Date.now() < eligibleAt) {
       return NextResponse.json(
