@@ -310,7 +310,7 @@ function ProductionRewardsEngagementButton({
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Engagement Rewards
         </h2>
-        <p className="text-sm text-gray-600">Claim your 3,000 G$ Engagement Rewards</p>
+        <p className="text-sm text-gray-600">Claim your 750 G$ Engagement Rewards</p>
       </div>
 
       <div className="w-full flex justify-center">
@@ -325,7 +325,7 @@ function ProductionRewardsEngagementButton({
               Processing...
             </>
           ) : (
-            "Claim 3K G$ NOW!"
+            "Claim G$ NOW!"
           )}
         </Button>
       </div>
