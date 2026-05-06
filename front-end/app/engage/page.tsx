@@ -190,6 +190,12 @@ function ProductionRewardsEngagementButton({
       ? precheckEligibleAt
       : undefined
   );
+  const canClaim =
+    precheckState === "eligible" &&
+    isConnected &&
+    !isLoading &&
+    Boolean(participantId) &&
+    Boolean(engagementRewards);
 
   const fetchEligibility = async (targetParticipantId: string) => {
     const eligibilityResponse = await fetch(
@@ -387,7 +393,7 @@ function ProductionRewardsEngagementButton({
       <div className="w-full flex justify-center">
         <Button
           onClick={handleClaim}
-          disabled={!isConnected || isLoading || !participantId || !engagementRewards}
+          disabled={!canClaim}
           className="w-full text-sm px-6 py-3"
         >
           {isLoading ? (
