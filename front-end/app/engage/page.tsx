@@ -22,8 +22,58 @@ type EligibilityResponse = {
   eligible: boolean;
   participantExists: boolean;
   reasonCode: string;
+  eligibleAt?: number;
 };
 type PrecheckState = "idle" | "checking" | "eligible" | "ineligible" | "error";
+type Countdown = {
+  hours: string;
+  minutes: string;
+  seconds: string;
+};
+
+function formatDuration(remainingMs: number): Countdown {
+  const totalSeconds = Math.max(0, Math.floor(remainingMs / 1000));
+  const hours = Math.floor(totalSeconds / 3600)
+    .toString()
+    .padStart(2, "0");
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = Math.floor(totalSeconds % 60)
+    .toString()
+    .padStart(2, "0");
+
+  return { hours, minutes, seconds };
+}
+
+function useCountdown(eligibleAt?: number): Countdown | null {
+  const [remaining, setRemaining] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!eligibleAt) {
+      setRemaining(null);
+      return;
+    }
+
+    const updateRemaining = () => {
+      const nextRemaining = Math.max(0, eligibleAt - Date.now());
+      setRemaining(nextRemaining);
+    };
+
+    updateRemaining();
+    const timer = window.setInterval(updateRemaining, 1000);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [eligibleAt]);
+
+  if (remaining === null || remaining <= 0) {
+    return null;
+  }
+
+  return formatDuration(remaining);
+}
 
 export default function EngagePage() {
   return (
@@ -131,6 +181,15 @@ function ProductionRewardsEngagementButton({
   const [status, setStatus] = useState<string>("");
   const [precheckState, setPrecheckState] = useState<PrecheckState>("idle");
   const [precheckMessage, setPrecheckMessage] = useState<string>("");
+  const [precheckReasonCode, setPrecheckReasonCode] = useState<string>("");
+  const [precheckEligibleAt, setPrecheckEligibleAt] = useState<number | undefined>(
+    undefined
+  );
+  const countdown = useCountdown(
+    precheckState === "ineligible" && precheckReasonCode === "NO_VALID_TASK_COMPLETION"
+      ? precheckEligibleAt
+      : undefined
+  );
 
   const fetchEligibility = async (targetParticipantId: string) => {
     const eligibilityResponse = await fetch(
@@ -147,6 +206,8 @@ function ProductionRewardsEngagementButton({
     if (!participantId) {
       setPrecheckState("ineligible");
       setPrecheckMessage(statusByReasonCode.MISSING_PARTICIPANT_ID);
+      setPrecheckReasonCode("MISSING_PARTICIPANT_ID");
+      setPrecheckEligibleAt(undefined);
       return;
     }
 
@@ -164,6 +225,12 @@ function ProductionRewardsEngagementButton({
         if (!eligibilityResponse.ok || !eligibility.eligible) {
           const reason = eligibility.reasonCode ?? "UNKNOWN";
           setPrecheckState("ineligible");
+          setPrecheckReasonCode(reason);
+          setPrecheckEligibleAt(
+            typeof eligibility.eligibleAt === "number"
+              ? eligibility.eligibleAt
+              : undefined
+          );
           setPrecheckMessage(
             statusByReasonCode[reason] ||
               `Engagement eligibility failed (${reason}).`
@@ -172,10 +239,14 @@ function ProductionRewardsEngagementButton({
         }
 
         setPrecheckState("eligible");
+        setPrecheckReasonCode("ELIGIBLE");
+        setPrecheckEligibleAt(undefined);
         setPrecheckMessage("Eligible for engagement rewards.");
       } catch {
         if (cancelled) return;
         setPrecheckState("error");
+        setPrecheckReasonCode("ERROR");
+        setPrecheckEligibleAt(undefined);
         setPrecheckMessage("Unable to verify eligibility right now.");
       }
     };
@@ -341,6 +412,14 @@ function ProductionRewardsEngagementButton({
           }`}
         >
           {precheckMessage}
+          {precheckState === "ineligible" &&
+            precheckReasonCode === "NO_VALID_TASK_COMPLETION" &&
+            countdown && (
+              <p className="mt-2 font-semibold">
+                {countdown.hours}:{countdown.minutes}:{countdown.seconds} until
+                eligible
+              </p>
+            )}
         </div>
       )}
 
