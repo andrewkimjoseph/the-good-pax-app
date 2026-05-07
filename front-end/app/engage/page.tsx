@@ -193,17 +193,21 @@ function EngagePageContent() {
           <ProductionRewardsEngagementButton participantId={participantId} />
         ) : (
           <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
-            <div className="text-center mb-6">
-              <div className="mb-6 flex justify-center">
-                <FontAwesomeIcon
-                  icon={faWandMagicSparkles}
-                  className={WAND_ICON_CLASS}
-                />
+            <div className="w-full p-[2px] rounded-xl bg-gradient-to-r from-[#FF9C4C] to-[#FF5C86]">
+              <div className="w-full rounded-[10px] bg-white px-4 py-6">
+                <div className="text-center mb-6">
+                  <div className="mb-6 flex justify-center">
+                    <FontAwesomeIcon
+                      icon={faWandMagicSparkles}
+                      className={WAND_ICON_CLASS}
+                    />
+                  </div>
+                  <h2 className="text-2xl font-bold text-[#363062] mb-2">
+                    Engagement Rewards
+                  </h2>
+                  <p className="text-sm text-[#625C89]">Loading...</p>
+                </div>
               </div>
-              <h2 className="text-2xl font-bold text-[#363062] mb-2">
-                Engagement Rewards
-              </h2>
-              <p className="text-sm text-[#625C89]">Loading...</p>
             </div>
           </div>
         )}
@@ -222,17 +226,21 @@ function EngagePageLoadingState() {
       </div>
       <div className="flex-1 flex items-start justify-center pt-12">
         <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
-          <div className="text-center mb-6">
-            <div className="mb-6 flex justify-center">
-              <FontAwesomeIcon
-                icon={faWandMagicSparkles}
-                className={WAND_ICON_CLASS}
-              />
+          <div className="w-full p-[2px] rounded-xl bg-gradient-to-r from-[#FF9C4C] to-[#FF5C86]">
+            <div className="w-full rounded-[10px] bg-white px-4 py-6">
+              <div className="text-center mb-6">
+                <div className="mb-6 flex justify-center">
+                  <FontAwesomeIcon
+                    icon={faWandMagicSparkles}
+                    className={WAND_ICON_CLASS}
+                  />
+                </div>
+                <h2 className="text-2xl font-bold text-[#363062] mb-2">
+                  Engagement Rewards
+                </h2>
+                <p className="text-sm text-[#625C89]">Loading...</p>
+              </div>
             </div>
-            <h2 className="text-2xl font-bold text-[#363062] mb-2">
-              Engagement Rewards
-            </h2>
-            <p className="text-sm text-[#625C89]">Loading...</p>
           </div>
         </div>
       </div>
@@ -535,7 +543,7 @@ function ProductionRewardsEngagementButton({
             <h2 className="text-2xl font-bold text-[#363062] mb-2">
               Engagement Rewards
             </h2>
-            <p className="text-sm text-[#625C89]">Claim your 750 G$ Engagement Rewards</p>
+            <p className="text-sm text-[#625C89]">Claim your 750 G$ for being awesome!</p>
           </div>
 
           <div className="w-full flex justify-center">
