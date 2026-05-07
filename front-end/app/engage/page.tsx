@@ -26,7 +26,7 @@ import { getFbclid, getStoredFbclid, appendFbclidToUrl } from "@/services/fbclid
 const APP_ADDRESS = process.env.NEXT_PUBLIC_APP_ADDRESS as `0x${string}`;
 const CANVASSING_BUSINESS_ADDRESS = process.env
   .NEXT_PUBLIC_CANVASSING_BUSINESS_ADDRESS as `0x${string}`;
-const WAND_ICON_CLASS = "h-[100px] w-[100px] text-orange-500";
+const WAND_ICON_CLASS = "h-[100px] w-[100px] text-[#FF9C4C]";
 
 // Backend returns a compact response shape that works for both success and
 // ineligible states. `eligibleAt` is only included when cooldown has not lapsed.
@@ -93,14 +93,14 @@ function useCountdown(eligibleAt?: number): Countdown | null {
 
 function getPrecheckBannerClass(state: PrecheckState): string {
   if (state === "eligible") {
-    return "bg-green-100 text-green-800 border border-green-200";
+    return "bg-green-50 text-[#34A853] border border-green-100";
   }
 
   if (state === "ineligible" || state === "error") {
     return "bg-red-100 text-red-800 border border-red-200";
   }
 
-  return "bg-blue-100 text-blue-800 border border-blue-200";
+  return "bg-[#18AEFA]/10 text-[#18AEFA] border border-[#18AEFA]/20";
 }
 
 function getStatusBannerClass(status: string): string {
@@ -112,7 +112,7 @@ function getStatusBannerClass(status: string): string {
     return "bg-red-100 text-red-800 border border-red-200";
   }
 
-  return "bg-blue-100 text-blue-800 border border-blue-200";
+  return "bg-[#18AEFA]/10 text-[#18AEFA] border border-[#18AEFA]/20";
 }
 
 function PrecheckBanner({
@@ -200,10 +200,10 @@ function EngagePageContent() {
                   className={WAND_ICON_CLASS}
                 />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              <h2 className="text-2xl font-bold text-[#363062] mb-2">
                 Engagement Rewards
               </h2>
-              <p className="text-sm text-gray-600">Loading...</p>
+              <p className="text-sm text-[#625C89]">Loading...</p>
             </div>
           </div>
         )}
@@ -229,10 +229,10 @@ function EngagePageLoadingState() {
                 className={WAND_ICON_CLASS}
               />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            <h2 className="text-2xl font-bold text-[#363062] mb-2">
               Engagement Rewards
             </h2>
-            <p className="text-sm text-gray-600">Loading...</p>
+            <p className="text-sm text-[#625C89]">Loading...</p>
           </div>
         </div>
       </div>
@@ -494,6 +494,9 @@ function ProductionRewardsEngagementButton({
           ? error
           : "");
 
+      const cleanClaimErrorPrefix = (value: string) =>
+        value.replace(/^(?:claim failed:\s*)+/i, "").trim();
+
       if (message.includes("Claim cooldown not reached")) {
         setStatus("You already claimed. Try again after the cooldown period.");
       } else if (message === "App not approved or registered") {
@@ -501,9 +504,17 @@ function ProductionRewardsEngagementButton({
           "This app is not approved for engagement rewards. Please contact support."
         );
       } else if (revertReason) {
-        setStatus(`Claim failed: ${revertReason}`);
+        const normalizedRevertReason = cleanClaimErrorPrefix(revertReason);
+        setStatus(
+          normalizedRevertReason
+            ? `Claim failed: ${normalizedRevertReason}`
+            : "Claim failed."
+        );
       } else {
-        setStatus(`Claim failed: ${message}`);
+        const normalizedMessage = cleanClaimErrorPrefix(message);
+        setStatus(
+          normalizedMessage ? `Claim failed: ${normalizedMessage}` : "Claim failed."
+        );
       }
     } finally {
       setIsLoading(false);
@@ -512,34 +523,38 @@ function ProductionRewardsEngagementButton({
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
-      <div className="text-center mb-6">
-        <div className="mb-6 flex justify-center">
-          <FontAwesomeIcon
-            icon={faWandMagicSparkles}
-            className={WAND_ICON_CLASS}
-          />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Engagement Rewards
-        </h2>
-        <p className="text-sm text-gray-600">Claim your 750 G$ Engagement Rewards</p>
-      </div>
+      <div className="w-full p-[2px] rounded-xl bg-gradient-to-r from-[#FF9C4C] to-[#FF5C86]">
+        <div className="w-full rounded-[10px] bg-white px-4 py-6">
+          <div className="text-center mb-6">
+            <div className="mb-6 flex justify-center">
+              <FontAwesomeIcon
+                icon={faWandMagicSparkles}
+                className={WAND_ICON_CLASS}
+              />
+            </div>
+            <h2 className="text-2xl font-bold text-[#363062] mb-2">
+              Engagement Rewards
+            </h2>
+            <p className="text-sm text-[#625C89]">Claim your 750 G$ Engagement Rewards</p>
+          </div>
 
-      <div className="w-full flex justify-center">
-        <Button
-          onClick={handleClaim}
-          disabled={!canClaim}
-          className="w-full text-sm px-6 py-3"
-        >
-          {isLoading ? (
-            <>
-              <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-              Processing...
-            </>
-          ) : (
-            "Claim G$ NOW!"
-          )}
-        </Button>
+          <div className="w-full flex justify-center">
+            <Button
+              onClick={handleClaim}
+              disabled={!canClaim}
+              className="w-full text-sm px-6 py-3"
+            >
+              {isLoading ? (
+                <>
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Claim G$ NOW!"
+              )}
+            </Button>
+          </div>
+        </div>
       </div>
 
       {precheckState !== "idle" && (
@@ -554,13 +569,13 @@ function ProductionRewardsEngagementButton({
       {status && <StatusBanner status={status} />}
 
       {!participantId && (
-        <p className="text-sm text-gray-600 text-center">
+        <p className="text-sm text-[#625C89] text-center">
           Missing participantId in the URL.
         </p>
       )}
 
       {!isConnected && (
-        <p className="text-sm text-gray-600 text-center">
+        <p className="text-sm text-[#625C89] text-center">
           Connect your wallet to claim rewards
         </p>
       )}

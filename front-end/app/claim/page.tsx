@@ -223,7 +223,8 @@ const ClaimContent = () => {
       }
     } catch (error) {
       console.error('Claim failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const rawMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage = rawMessage.replace(/^(?:claim failed:\s*)+/i, '').trim() || 'Unknown error';
       setStatus(`Claim failed: ${errorMessage}`);
       setError(errorMessage);
       // Track failed UBI claim

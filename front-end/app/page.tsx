@@ -63,10 +63,10 @@ export default function Home() {
               className="drop-shadow-lg"
             />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-8">
+          <h1 className="text-2xl font-black text-[#363062] mb-8">
             Welcome to The Good Pax App
           </h1>
-          <p className="text-lg text-gray-600 mb-2">
+          <p className="text-lg text-[#625C89] mb-2">
             Where Canvassing (Pax) and GoodDollar meet.
           </p>
           <Link href={appendFbclidToUrl("/about")}>
@@ -113,17 +113,17 @@ export default function Home() {
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-2">
               {verificationStatus.loading ? (
-                <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-blue-500" />
+                <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-[#18AEFA]" />
               ) : verificationStatus.isVerified ? (
                 <div title="Verified wallet">
-                  <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5 text-green-500" />
+                  <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5 text-[#34A853]" />
                 </div>
               ) : (
                 <div title="Unverified wallet">
-                  <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-orange-500" />
+                  <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-[#FF9C4C]" />
                 </div>
               )}
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-[#625C89]">
                 {verificationStatus.loading
                   ? "Checking verification..."
                   : verificationStatus.isVerified
@@ -135,10 +135,9 @@ export default function Home() {
               <div className="flex flex-col gap-3 w-full max-w-xs">
                 <Link href={appendFbclidToUrl("/claim")} className="block w-full">
                   <Button
-                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
+                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105 hover:opacity-90"
                     style={{
-                      background:
-                        "linear-gradient(90deg, #4C9FFF 0%, #5C86FF 100%)",
+                      background: "#363062",
                     }}
                   >
                     Claim UBI (Every day)
@@ -150,10 +149,9 @@ export default function Home() {
                   onClick={() => analytics.trackSwapViewed()}
                 >
                   <Button
-                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
+                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105 hover:opacity-90"
                     style={{
-                      background:
-                        "linear-gradient(90deg, #00C853 0%, #00A651 100%)",
+                      background: "#363062",
                     }}
                   >
                     Swap your G$ (All day)
@@ -199,7 +197,7 @@ export default function Home() {
                     }
                   }}
                   disabled={isGeneratingLink || verificationStatus.isRedirecting}
-                  className="text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105 hover:opacity-90 disabled:opacity-70 disabled:cursor-not-allowed"
                   style={{
                     background:
                       "linear-gradient(90deg, #FF9C4C 0%, #FF7A00 100%)",
@@ -219,21 +217,21 @@ export default function Home() {
         ) : (
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-6">
-              <p className="text-lg text-gray-500 flex items-center gap-2">
+              <p className="text-lg text-[#9D99B4] flex items-center gap-2">
                 Connect your wallet to continue
-                <FontAwesomeIcon icon={faSpinner} spin className="h-4 w-4 text-gray-400" />
+                <FontAwesomeIcon icon={faSpinner} spin className="h-4 w-4 text-[#CFCED8]" />
               </p>
               {isConnected && (
                 <div className="flex items-center">
                   {verificationStatus.loading ? (
-                    <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-blue-500" />
+                    <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-[#18AEFA]" />
                   ) : verificationStatus.isVerified ? (
                     <div title="Verified wallet">
-                      <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5 text-green-500" />
+                      <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5 text-[#34A853]" />
                     </div>
                   ) : isConnected ? (
                     <div title="Unverified wallet">
-                      <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-orange-500" />
+                      <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-[#FF9C4C]" />
                     </div>
                   ) : null}
                 </div>
