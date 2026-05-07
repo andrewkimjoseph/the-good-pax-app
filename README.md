@@ -219,9 +219,10 @@ npm run test:browserstack
 - **`/api/getAppSignature`**: (Legacy) POST endpoint for generating app signatures (engagement)
   - Requires: `user`, `validUntilBlock`, `canvassingBusinessAddress` (optional)
   - Returns: `signature` (hex string)
-- **`/api/engagementRewards/eligibility`**: GET endpoint for engagement eligibility checks
-  - Requires query param: `participantId`
-  - Validates participant existence + v2 + pax wallet + valid completion + claimed reward
+- **`/api/engagementRewards/eligibility`**: POST endpoint for engagement eligibility checks
+  - Requires JSON body: `participantId`, `walletAddress` (connected wallet must match a Pax `payment_methods` withdrawal address)
+  - Validates participant exists, latest valid task completion (including a 24-hour cooldown; may return `eligibleAt`), wallet withdrawal match, and GoodDollar Identity whitelist on-chain (`identities(...).status === 1`)
+  - Returns JSON including `eligible`, `participantExists`, and `reasonCode` (for example `MISSING_PARTICIPANT_ID`, `MISSING_WALLET_ADDRESS`, `PARTICIPANT_NOT_FOUND`, `NO_VALID_TASK_COMPLETION`, `NO_MATCHING_WITHDRAWAL_METHOD`, `WALLET_NOT_WHITELISTED`, `ELIGIBLE`)
 
 ## 🔐 Security & Verification
 
