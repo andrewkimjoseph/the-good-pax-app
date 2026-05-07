@@ -1,28 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
 import { paxDB } from "@/lib/firebaseAdmin";
 import { Timestamp } from "firebase-admin/firestore";
+import { type Address } from "viem";
+import { IDENTITY_PROXY_CONTRACT_ADDRESS, PUBLIC_CLIENT } from "./config";
+import { identityABI } from "./abis/identity";
 
 const COLLECTIONS = {
   PARTICIPANTS: "participants",
   TASK_COMPLETIONS: "task_completions",
+  PAYMENT_METHODS: "payment_methods",
 } as const;
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
 type EligibilityReason =
   | "MISSING_PARTICIPANT_ID"
+  | "MISSING_WALLET_ADDRESS"
   | "PARTICIPANT_NOT_FOUND"
   | "NO_VALID_TASK_COMPLETION"
+  | "NO_MATCHING_WITHDRAWAL_METHOD"
+  | "WALLET_NOT_WHITELISTED"
   | "ELIGIBLE";
 
 function computeEligibleAt(timeCreated: Timestamp): number {
   return timeCreated.toMillis() + TWENTY_FOUR_HOURS_MS;
 }
 
-export async function GET(request: NextRequest) {
+async function isWalletWhitelisted(eoAddress: Address): Promise<boolean> {
+  const identity = await PUBLIC_CLIENT.readContract({
+    address: IDENTITY_PROXY_CONTRACT_ADDRESS,
+    abi: identityABI,
+    functionName: "identities",
+    args: [eoAddress],
+  });
+
+  const status = Number(identity[4]);
+  return status === 1;
+}
+
+export async function POST(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    // Trim guards against accidental leading/trailing whitespace in links.
-    const participantId = searchParams.get("participantId")?.trim();
+    const body = await request.json();
+    const participantId = body?.participantId?.trim();
+    const walletAddress = body?.walletAddress?.trim();
 
     if (!participantId) {
       return NextResponse.json(
@@ -30,6 +49,17 @@ export async function GET(request: NextRequest) {
           eligible: false,
           participantExists: false,
           reasonCode: "MISSING_PARTICIPANT_ID" as EligibilityReason,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!walletAddress) {
+      return NextResponse.json(
+        {
+          eligible: false,
+          participantExists: false,
+          reasonCode: "MISSING_WALLET_ADDRESS" as EligibilityReason,
         },
         { status: 400 }
       );
@@ -100,6 +130,45 @@ export async function GET(request: NextRequest) {
           participantExists: true,
           reasonCode: "NO_VALID_TASK_COMPLETION" as EligibilityReason,
           eligibleAt,
+        },
+        { status: 403 }
+      );
+    }
+
+    const paymentMethodsSnapshot = await paxDB
+      .collection(COLLECTIONS.PAYMENT_METHODS)
+      .where("participantId", "==", participantId)
+      .get();
+
+    const walletMatched = paymentMethodsSnapshot.docs.some((doc) => {
+      const paymentMethod = doc.data();
+      const paymentMethodWalletAddress = paymentMethod.walletAddress;
+
+      return (
+        typeof paymentMethodWalletAddress === "string" &&
+        paymentMethodWalletAddress.toLowerCase() === walletAddress.toLowerCase()
+      );
+    });
+
+    if (!walletMatched) {
+      return NextResponse.json(
+        {
+          eligible: false,
+          participantExists: true,
+          reasonCode: "NO_MATCHING_WITHDRAWAL_METHOD" as EligibilityReason,
+        },
+        { status: 403 }
+      );
+    }
+
+    const whitelisted = await isWalletWhitelisted(walletAddress as Address);
+
+    if (!whitelisted) {
+      return NextResponse.json(
+        {
+          eligible: false,
+          participantExists: true,
+          reasonCode: "WALLET_NOT_WHITELISTED" as EligibilityReason,
         },
         { status: 403 }
       );

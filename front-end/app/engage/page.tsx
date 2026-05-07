@@ -3,6 +3,10 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAccount, useChainId } from "wagmi";
+import {
+  ContractFunctionExecutionError,
+  ContractFunctionRevertedError,
+} from "viem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
 
@@ -239,8 +243,13 @@ function EngagePageLoadingState() {
 const statusByReasonCode: Record<string, string> = {
   // Keep raw backend reason codes out of user-facing UI copy.
   MISSING_PARTICIPANT_ID: "Your id is missing. Please use a valid link from Pax.",
+  MISSING_WALLET_ADDRESS: "Please connect your wallet to check eligibility.",
   PARTICIPANT_NOT_FOUND: "It seems you are not registered on Pax yet.",
   NO_VALID_TASK_COMPLETION: "No valid task completion found for you on Pax.",
+  NO_MATCHING_WITHDRAWAL_METHOD:
+    "Your connected wallet is not registered as a withdrawal method on Pax.",
+  WALLET_NOT_WHITELISTED:
+    "Your wallet is not whitelisted. Please complete face verification first.",
 };
 
 function ProductionRewardsEngagementButton({
@@ -279,11 +288,20 @@ function ProductionRewardsEngagementButton({
     Boolean(participantId) &&
     Boolean(engagementRewards);
 
-  const fetchEligibility = async (targetParticipantId: string) => {
+  const fetchEligibility = async (
+    targetParticipantId: string,
+    targetWalletAddress: string
+  ) => {
     const eligibilityResponse = await fetch(
-      `/api/engagementRewards/eligibility?participantId=${encodeURIComponent(
-        targetParticipantId
-      )}`
+      "/api/engagementRewards/eligibility",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          participantId: targetParticipantId,
+          walletAddress: targetWalletAddress,
+        }),
+      }
     );
     // Backend can omit fields in error states, so we parse as Partial.
     const eligibility =
@@ -300,6 +318,14 @@ function ProductionRewardsEngagementButton({
       return;
     }
 
+    if (!userAddress) {
+      setPrecheckState("ineligible");
+      setPrecheckMessage(statusByReasonCode.MISSING_WALLET_ADDRESS);
+      setPrecheckReasonCode("MISSING_WALLET_ADDRESS");
+      setPrecheckEligibleAt(undefined);
+      return;
+    }
+
     let cancelled = false;
 
     const runPrecheck = async () => {
@@ -307,7 +333,8 @@ function ProductionRewardsEngagementButton({
       setPrecheckMessage("Checking engagement eligibility...");
       try {
         const { eligibilityResponse, eligibility } = await fetchEligibility(
-          participantId
+          participantId,
+          userAddress
         );
         if (cancelled) return;
 
@@ -345,7 +372,7 @@ function ProductionRewardsEngagementButton({
       // Prevent older async calls from mutating state after dependency changes.
       cancelled = true;
     };
-  }, [participantId]);
+  }, [participantId, userAddress]);
 
   const handleClaim = async () => {
     if (!engagementRewards) {
@@ -376,7 +403,8 @@ function ProductionRewardsEngagementButton({
     try {
       // Re-run eligibility at click time to avoid stale page-level precheck.
       const { eligibilityResponse, eligibility } = await fetchEligibility(
-        participantId
+        participantId,
+        userAddress
       );
 
       if (!eligibilityResponse.ok || !eligibility.eligible) {
@@ -448,15 +476,32 @@ function ProductionRewardsEngagementButton({
         });
       }
     } catch (error) {
+      // Extract concise revert reasons from viem errors to avoid showing
+      // low-level call details in the UI.
+      let revertReason: string | undefined;
+      if (error instanceof ContractFunctionExecutionError) {
+        const cause = error.cause;
+        if (cause instanceof ContractFunctionRevertedError) {
+          revertReason = cause.reason;
+        }
+      }
+
       const message =
-        error instanceof Error
+        revertReason ??
+        (error instanceof Error
           ? error.message
           : typeof error === "string"
           ? error
-          : "";
+          : "");
 
       if (message.includes("Claim cooldown not reached")) {
         setStatus("You already claimed. Try again after the cooldown period.");
+      } else if (message === "App not approved or registered") {
+        setStatus(
+          "This app is not approved for engagement rewards. Please contact support."
+        );
+      } else if (revertReason) {
+        setStatus(`Claim failed: ${revertReason}`);
       } else {
         setStatus(`Claim failed: ${message}`);
       }

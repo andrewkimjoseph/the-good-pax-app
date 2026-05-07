@@ -82,24 +82,6 @@ function getEngagementRewardsSDK() {
   return sdk
 }
 
-
-
-// Helper function to log signature requests for auditing
-async function logSignatureRequest(data: {
-  app: string
-  user: string
-  canvassingBusinessAddress?: string
-  validUntilBlock: string
-  signature: string
-}): Promise<void> {
-  // This is a placeholder - implement your actual logging logic
-  // Examples: save to database, send to logging service, etc.
-  console.log('Signature request:', {
-    timestamp: new Date().toISOString(),
-    ...data
-  })
-}
-
 export async function POST(request: Request) {
   try {
     // Check if environment variables are properly configured
@@ -166,15 +148,6 @@ export async function POST(request: Request) {
       types, 
       primaryType: 'AppClaim',
       message
-    })
-
-    // Log signature request for auditing
-    await logSignatureRequest({
-      app: APP_ADDRESS,
-      user,
-      canvassingBusinessAddress: canvassingBusinessAddress || '',
-      validUntilBlock,
-      signature
     })
 
     return NextResponse.json({ 
