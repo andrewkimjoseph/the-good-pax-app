@@ -78,9 +78,7 @@ export async function GET(request: NextRequest) {
     const timeCreated = latestValidTaskCompletion.timeCreated;
     // Firestore Admin should return Timestamp for Firestore timestamp fields.
     // Keep this guard to avoid runtime crashes from malformed historical data.
-    const isTimestamp = timeCreated instanceof Timestamp;
-
-    if (!isTimestamp) {
+    if (!(timeCreated instanceof Timestamp)) {
       return NextResponse.json(
         {
           eligible: false,
