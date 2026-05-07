@@ -247,7 +247,7 @@ const statusByReasonCode: Record<string, string> = {
   PARTICIPANT_NOT_FOUND: "It seems you are not registered on Pax yet.",
   NO_VALID_TASK_COMPLETION: "No valid task completion found for you on Pax.",
   NO_MATCHING_WITHDRAWAL_METHOD:
-    "Your connected wallet is not registered as a withdrawal method on Pax.",
+    "Your connected wallet is not registered as your withdrawal method on Pax.",
   WALLET_NOT_WHITELISTED:
     "Your wallet is not whitelisted. Please complete face verification first.",
 };
