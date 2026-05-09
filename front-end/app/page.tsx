@@ -29,6 +29,11 @@ export default function Home() {
       isRedirecting: false,
     });
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Track page view on mount and capture fbclid
   useEffect(() => {
@@ -109,7 +114,7 @@ export default function Home() {
           </div>
         </div>
         */}
-        {isConnected ? (
+        {mounted && isConnected ? (
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-2">
               {verificationStatus.loading ? (
@@ -158,23 +163,22 @@ export default function Home() {
                   </Button>
                 </Link>
 
-                {/* <Link href={appendFbclidToUrl("/engage")} className="block w-full">
+                <Link href={appendFbclidToUrl("/engage")} className="block w-full">
                   <Button
-                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105"
+                    className="w-full text-lg px-8 py-4 text-white font-semibold rounded-lg shadow-lg transform transition hover:scale-105 hover:opacity-90"
                     style={{
-                      background:
-                        "linear-gradient(90deg, #FF9C4C 0%, #FF7A00 100%)",
+                      background: "#363062",
                     }}
                   >
                     Engage (One time)
                   </Button>
-                </Link> */}
+                </Link>
 
               </div>
             )}
             {!verificationStatus.isVerified &&
               !verificationStatus.loading &&
-              isConnected && (
+              mounted && isConnected && (
                 <Button
                   onClick={async () => {
                     setIsGeneratingLink(true);
@@ -221,33 +225,7 @@ export default function Home() {
                 Connect your wallet to continue
                 <FontAwesomeIcon icon={faSpinner} spin className="h-4 w-4 text-[#CFCED8]" />
               </p>
-              {isConnected && (
-                <div className="flex items-center">
-                  {verificationStatus.loading ? (
-                    <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-[#18AEFA]" />
-                  ) : verificationStatus.isVerified ? (
-                    <div title="Verified wallet">
-                      <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5 text-[#34A853]" />
-                    </div>
-                  ) : isConnected ? (
-                    <div title="Unverified wallet">
-                      <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-[#FF9C4C]" />
-                    </div>
-                  ) : null}
-                </div>
-              )}
             </div>
-            {/* <p className="text-sm text-gray-400">
-              Not verified?{" "}
-              <a 
-                href="https://goodwallet.xyz?inviteCode=2TWZbDwPWN" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 underline"
-              >
-                Get verified here.
-              </a>
-            </p> */}
           </div>
         )}
 

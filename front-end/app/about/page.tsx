@@ -7,9 +7,8 @@ import {
   faGift,
   faWandMagicSparkles,
   faCircleCheck,
-  faUsers,
   faCoins,
-  faShieldHalved,
+  faArrowsRotate,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@/components/ui/button";
 import { analytics } from "@/services/analytics";
@@ -86,69 +85,61 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-800 mb-1">
-                    Claim Daily UBI
+                    Claim UBI
+                    <span className="ml-2 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                      Every single day
+                    </span>
                   </h3>
                   <p className="text-sm text-gray-600">
                     Get free G$ (GoodDollar) tokens every single day.
-                    No catch, no tricks-just free money for being human!
+                    No catch, no tricks — just free money for being human!
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Feature 2: Pax Tasks */}
-            {/* <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+            {/* Feature 2: Swap */}
+            <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <FontAwesomeIcon icon={faArrowsRotate} className="h-8 w-8 text-blue-500" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-800 mb-1">
+                    Swap Your G$
+                    <span className="ml-2 text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                      Always available
+                    </span>
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Convert your G$ into other tokens anytime using the built-in swap.
+                    Turn your daily UBI into stablecoins or other assets at any time.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature 3: Engage */}
+            <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
                   <FontAwesomeIcon icon={faWandMagicSparkles} className="h-8 w-8 text-orange-500" />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-800 mb-1">
-                    Use Pax for Tasks
+                    Engage &amp; Earn
+                    <span className="ml-2 text-xs font-medium text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
+                      Based on availability
+                    </span>
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Pax is where Canvassing meets GoodDollar: complete real-world tasks
-                    and earn G$ and stablecoins.
-                  </p>
-                </div>
-              </div>
-            </div> */}
-
-            {/* Feature 3: Human Verification */}
-            <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0">
-                  <FontAwesomeIcon icon={faShieldHalved} className="h-8 w-8 text-purple-500" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-800 mb-1">
-                    Verified & Secure
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    We use facial verification to ensure one person = one account.
-                    This keeps the system fair and prevents abuse.
+                    Earn extra G$ rewards by engaging with the app through special campaigns.
+                    Availability is limited — check back regularly so you don&apos;t miss out.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Feature 4: Community Powered */}
-            <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0">
-                  <FontAwesomeIcon icon={faUsers} className="h-8 w-8 text-blue-500" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-800 mb-1">
-                    Join a Global Movement
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    You&apos;re joining thousands of people worldwide who believe
-                    everyone deserves access to basic income and financial freedom.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -169,7 +160,7 @@ export default function AboutPage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="font-bold text-orange-600 flex-shrink-0">3.</span>
-              <span>Start claiming your daily UBI and explore Pax tasks!</span>
+              <span>Claim your daily UBI, swap your G$ anytime, and engage when campaigns are available!</span>
             </li>
           </ol>
         </div>
