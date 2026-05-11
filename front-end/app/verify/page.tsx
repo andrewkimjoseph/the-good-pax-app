@@ -111,7 +111,7 @@ function VerifyContent() {
       <div className="font-sans flex flex-col min-h-[60vh] p-6 gap-6 items-center justify-center">
         <FontAwesomeIcon icon={faTriangleExclamation} className="h-16 w-16 text-amber-500" aria-hidden />
         <p className="text-center text-lg text-gray-700">
-          We couldn't determine your verification result. You can try again.
+          We couldn&apos;t determine your verification result. You can try again.
         </p>
         <Link href="/verify">
           <Button variant="outline">Retry</Button>
