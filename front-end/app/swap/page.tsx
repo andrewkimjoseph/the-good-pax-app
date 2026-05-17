@@ -3,7 +3,12 @@
 import { useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LiFiWidget, WidgetSkeleton, type WidgetConfig } from "@lifi/widget";
+import {
+  LiFiWidget,
+  WidgetSkeleton,
+  type WidgetConfig,
+  type WidgetFeeConfig,
+} from "@lifi/widget";
 
 import { Button } from "@/components/ui/button";
 import { analytics } from "@/services/analytics";
@@ -24,6 +29,14 @@ function useHydrated() {
 
 export default function SwapPage() {
   const hydrated = useHydrated();
+  const feeConfig: WidgetFeeConfig = {
+    name: "Canvassing",
+    logoURI: "/canvassing.png",
+    fee: 0.05,
+    showFeePercentage: true,
+    showFeeTooltip: true,
+  };
+
   const widgetConfig: Partial<WidgetConfig> = {
     appearance: "light",
     theme: {
@@ -36,6 +49,7 @@ export default function SwapPage() {
     toChain: 42220,
     fromToken: getTokenAddress("G$"),
     toToken: getTokenAddress("USDT"),
+    feeConfig,
   };
 
   useEffect(() => {
