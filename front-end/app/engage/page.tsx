@@ -248,17 +248,40 @@ function EngagePageLoadingState() {
   );
 }
 
-const statusByReasonCode: Record<string, string> = {
-  // Keep raw backend reason codes out of user-facing UI copy.
-  MISSING_PARTICIPANT_ID: "Your id is missing. Please use a valid link from Pax.",
+// Mirrors every reasonCode from /api/engagementRewards/eligibility plus
+// client-only codes (ERROR, UNKNOWN). Keep backend codes in sync with
+// EligibilityReason in route.ts.
+const statusByReasonCode = {
+  MISSING_PARTICIPANT_ID:
+    "Your id is missing. Please use a valid link from Pax.",
   MISSING_WALLET_ADDRESS: "Please connect your wallet to check eligibility.",
+  MISSING_APP_ADDRESS:
+    "Rewards are temporarily unavailable. Please try again later or contact support.",
   PARTICIPANT_NOT_FOUND: "It seems you are not registered on Pax yet.",
-  NO_VALID_TASK_COMPLETION: "No valid task completion found for you on Pax.",
-  NO_MATCHING_WITHDRAWAL_METHOD:
+  INSUFFICIENT_TASK_COMPLETIONS:
+    "Complete at least two tasks on Pax before claiming engagement rewards.",
+  INVALID_TASK_COMPLETION_DATA:
+    "We could not verify your task history. Please contact support.",
+  REWARD_ON_COOLDOWN:
+    "Your latest task was completed recently. You can claim 24 hours after that completion.",
+  UNREGISTERED_WITHDRAWAL_WALLET:
     "Your connected wallet is not registered as your withdrawal method on Pax.",
   WALLET_NOT_WHITELISTED:
     "Your wallet is not whitelisted. Please complete face verification first.",
-};
+  ENGAGEMENT_CLAIM_ON_COOLDOWN:
+    "You have already claimed your engagement reward. You can claim again after the 180-day cooldown.",
+  ELIGIBLE: "Eligible for engagement rewards.",
+  SERVER_ERROR: "Unable to verify eligibility right now. Please try again.",
+  ERROR: "Unable to verify eligibility right now.",
+  UNKNOWN: "Unable to verify eligibility. Please try again.",
+} as const satisfies Record<string, string>;
+
+function getStatusMessage(reason: string): string {
+  return (
+    statusByReasonCode[reason as keyof typeof statusByReasonCode] ??
+    statusByReasonCode.UNKNOWN
+  );
+}
 
 function ProductionRewardsEngagementButton({
   participantId,
@@ -320,7 +343,7 @@ function ProductionRewardsEngagementButton({
   useEffect(() => {
     if (!participantId) {
       setPrecheckState("ineligible");
-      setPrecheckMessage(statusByReasonCode.MISSING_PARTICIPANT_ID);
+      setPrecheckMessage(getStatusMessage("MISSING_PARTICIPANT_ID"));
       setPrecheckReasonCode("MISSING_PARTICIPANT_ID");
       setPrecheckEligibleAt(undefined);
       return;
@@ -328,7 +351,7 @@ function ProductionRewardsEngagementButton({
 
     if (!userAddress) {
       setPrecheckState("ineligible");
-      setPrecheckMessage(statusByReasonCode.MISSING_WALLET_ADDRESS);
+      setPrecheckMessage(getStatusMessage("MISSING_WALLET_ADDRESS"));
       setPrecheckReasonCode("MISSING_WALLET_ADDRESS");
       setPrecheckEligibleAt(undefined);
       return;
@@ -355,23 +378,20 @@ function ProductionRewardsEngagementButton({
               ? eligibility.eligibleAt
               : undefined
           );
-          setPrecheckMessage(
-            statusByReasonCode[reason] ||
-              `Engagement eligibility failed (${reason}).`
-          );
+          setPrecheckMessage(getStatusMessage(reason));
           return;
         }
 
         setPrecheckState("eligible");
         setPrecheckReasonCode("ELIGIBLE");
         setPrecheckEligibleAt(undefined);
-        setPrecheckMessage("Eligible for engagement rewards.");
+        setPrecheckMessage(getStatusMessage("ELIGIBLE"));
       } catch {
         if (cancelled) return;
         setPrecheckState("error");
         setPrecheckReasonCode("ERROR");
         setPrecheckEligibleAt(undefined);
-        setPrecheckMessage("Unable to verify eligibility right now.");
+        setPrecheckMessage(getStatusMessage("ERROR"));
       }
     };
 
@@ -389,7 +409,7 @@ function ProductionRewardsEngagementButton({
     }
 
     if (!participantId) {
-      setStatus(statusByReasonCode.MISSING_PARTICIPANT_ID);
+      setStatus(getStatusMessage("MISSING_PARTICIPANT_ID"));
       return;
     }
 
@@ -417,10 +437,7 @@ function ProductionRewardsEngagementButton({
 
       if (!eligibilityResponse.ok || !eligibility.eligible) {
         const reason = eligibility.reasonCode ?? "UNKNOWN";
-        setStatus(
-          statusByReasonCode[reason] ||
-            `Engagement eligibility failed (${reason}).`
-        );
+        setStatus(getStatusMessage(reason));
         return;
       }
 
