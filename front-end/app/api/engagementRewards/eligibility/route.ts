@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { paxDB } from "@/lib/firebaseAdmin";
 import { Timestamp } from "firebase-admin/firestore";
-import { type Address } from "viem";
-import { IDENTITY_PROXY_CONTRACT_ADDRESS, PUBLIC_CLIENT } from "./config";
+import { type Address, zeroAddress } from "viem";
+import {
+  APP_ADDRESS,
+  ENGAGEMENT_REWARDS_PROXY_CONTRACT_ADDRESS,
+  IDENTITY_PROXY_CONTRACT_ADDRESS,
+  PUBLIC_CLIENT,
+} from "./config";
 import { identityABI } from "./abis/identity";
+import { engagementRewardsABI } from "./abis/engagementRewards";
 
 // Collection name constants are centralised here so that a Firestore rename
 // only requires a single-point change rather than hunting through the handler.
@@ -18,6 +24,13 @@ const COLLECTIONS = {
 // makes the business rule self-documenting and easy to adjust.
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
+// The EngagementRewards contract enforces a 180-day claim cooldown per
+// (app, user). We mirror the constant client-side so the precheck can compute
+// the next eligible-at timestamp without an extra RPC round-trip; if the
+// contract value ever drifts, the on-chain claim itself will still revert as
+// the source of truth.
+const CLAIM_COOLDOWN_MS = 180 * 24 * 60 * 60 * 1000;
+
 // A discriminated union of every outcome this endpoint can return lets the
 // client switch on a stable string code rather than interpreting HTTP status
 // codes alone.  Each variant maps to exactly one failure mode so the client
@@ -27,12 +40,14 @@ const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 type EligibilityReason =
   | "MISSING_PARTICIPANT_ID"           // participantId was absent or blank in the request body
   | "MISSING_WALLET_ADDRESS"           // walletAddress was absent or blank in the request body
+  | "MISSING_APP_ADDRESS"              // server is missing NEXT_PUBLIC_APP_ADDRESS configuration
   | "PARTICIPANT_NOT_FOUND"            // no Firestore document exists for the given participantId
   | "INSUFFICIENT_TASK_COMPLETIONS"    // participant has fewer than 2 valid task completions
   | "INVALID_TASK_COMPLETION_DATA"     // the most recent completion has a malformed timeCreated field
   | "REWARD_ON_COOLDOWN"               // the 24-hour lock after the latest completion has not yet expired
   | "UNREGISTERED_WITHDRAWAL_WALLET"   // the supplied wallet is not saved as a payment method for this participant
   | "WALLET_NOT_WHITELISTED"           // the wallet has not been approved on the on-chain Identity contract
+  | "ENGAGEMENT_CLAIM_ON_COOLDOWN"     // the wallet (resolved to its whitelisted root) has already claimed this app within the on-chain 180-day cooldown
   | "ELIGIBLE";                        // all conditions satisfied — reward can be claimed
 
 // Returns the Unix-millisecond timestamp at which the participant becomes
@@ -43,23 +58,125 @@ function computeEligibleAt(timeCreated: Timestamp): number {
   return timeCreated.toMillis() + TWENTY_FOUR_HOURS_MS;
 }
 
-// Calls the on-chain Identity proxy contract to verify that the given
-// externally-owned address has been whitelisted by the Pax protocol.
-// The identity tuple returned by the contract stores the account status at
-// index 4; a value of 1 means the address is active and whitelisted.
-async function isWalletWhitelisted(eoAddress: Address): Promise<boolean> {
-  const identity = await PUBLIC_CLIENT.readContract({
-    address: IDENTITY_PROXY_CONTRACT_ADDRESS,
-    abi: identityABI,
-    functionName: "identities",
-    args: [eoAddress],
-  });
+// Result of the on-chain precheck. We resolve everything we need from the
+// chain in one multicall so callers don't have to orchestrate parallel reads
+// or distinguish "wallet not whitelisted" vs "already claimed" themselves.
+type OnChainStatus =
+  | { kind: "not_whitelisted" }
+  | { kind: "on_cooldown"; eligibleAt: number }
+  | { kind: "ok" };
 
-  // Index 4 of the identity tuple is the numeric status flag.
-  // 1 = whitelisted/active; any other value (0, 2, …) means the address
-  // has not been approved or has been revoked.
-  const status = Number(identity[4]);
-  return status === 1;
+// Performs the on-chain portion of the eligibility check in a single RPC
+// round-trip:
+//   1. `identities(wallet)` — status flag at tuple index 4 must be 1 for the
+//      wallet to be considered whitelisted. Any other value (0, 2, …) means
+//      the address has not been approved or has been revoked.
+//   2. `getWhitelistedRoot(wallet)` — claim records on EngagementRewards are
+//      keyed by the identity *root*, not the EOA. Resolving the root here
+//      means we never miss a prior claim made from a different sub-wallet
+//      bound to the same identity.
+//   3. `userRegistrations(app, root)` — returns `(isRegistered,
+//      lastClaimTimestamp)`. We only care about `lastClaimTimestamp`; a zero
+//      value means the user has never claimed for this app.
+async function checkOnChainStatus(
+  walletAddress: Address,
+  appAddress: Address
+): Promise<OnChainStatus> {
+  const [identityResult, rootResult, registrationResult] =
+    await PUBLIC_CLIENT.multicall({
+      // `allowFailure: true` keeps a single sub-call's revert from poisoning
+      // the entire batch — we want to surface a precise reason rather than
+      // bubbling up a generic multicall error.
+      allowFailure: true,
+      contracts: [
+        {
+          address: IDENTITY_PROXY_CONTRACT_ADDRESS,
+          abi: identityABI,
+          functionName: "identities",
+          args: [walletAddress],
+        },
+        {
+          address: IDENTITY_PROXY_CONTRACT_ADDRESS,
+          abi: identityABI,
+          functionName: "getWhitelistedRoot",
+          args: [walletAddress],
+        },
+        {
+          address: ENGAGEMENT_REWARDS_PROXY_CONTRACT_ADDRESS,
+          abi: engagementRewardsABI,
+          functionName: "userRegistrations",
+          // The root must be resolved before we can key into this mapping,
+          // but multicall evaluates all calls against the same block, so we
+          // pre-compute with the wallet address and re-key below if the root
+          // differs. Using the wallet here as a sentinel keeps the request
+          // size constant; the response is only consulted when root == wallet.
+          args: [appAddress, walletAddress],
+        },
+      ],
+    });
+
+  if (identityResult.status !== "success") {
+    // If the identity read itself fails (e.g. RPC hiccup), treat the wallet
+    // as not whitelisted so the user is told to verify rather than silently
+    // erroring further down the pipeline.
+    return { kind: "not_whitelisted" };
+  }
+
+  const status = Number(identityResult.result[4]);
+  if (status !== 1) {
+    return { kind: "not_whitelisted" };
+  }
+
+  // If `getWhitelistedRoot` reverts or returns the zero address, the wallet
+  // isn't bound to a recognised identity root and we cannot resolve its
+  // claim history. Erring on the side of "not whitelisted" is consistent
+  // with the existing UX copy and matches what the contract would do at
+  // claim time.
+  if (
+    rootResult.status !== "success" ||
+    rootResult.result === zeroAddress
+  ) {
+    return { kind: "not_whitelisted" };
+  }
+
+  const root = rootResult.result as Address;
+
+  // Re-read userRegistrations against the actual root if it differs from the
+  // EOA we used in the initial multicall. This is the common case for users
+  // who manage multiple wallets under a single Pax identity.
+  let lastClaimTimestamp: number;
+  if (root.toLowerCase() === walletAddress.toLowerCase()) {
+    if (registrationResult.status !== "success") {
+      // Treat an unreadable claim ledger as "no prior claim" so legitimate
+      // first-time users aren't blocked by transient RPC failures; the
+      // on-chain claim itself will revert if this turns out to be wrong.
+      lastClaimTimestamp = 0;
+    } else {
+      lastClaimTimestamp = Number(registrationResult.result[1]);
+    }
+  } else {
+    const rootRegistration = await PUBLIC_CLIENT.readContract({
+      address: ENGAGEMENT_REWARDS_PROXY_CONTRACT_ADDRESS,
+      abi: engagementRewardsABI,
+      functionName: "userRegistrations",
+      args: [appAddress, root],
+    });
+    lastClaimTimestamp = Number(rootRegistration[1]);
+  }
+
+  if (lastClaimTimestamp === 0) {
+    return { kind: "ok" };
+  }
+
+  // Block timestamps and `CLAIM_COOLDOWN_MS` are both in seconds / ms since
+  // the Unix epoch, so a direct addition gives the precise UTC instant the
+  // 180-day cooldown elapses for this user.
+  const eligibleAt = lastClaimTimestamp * 1000 + CLAIM_COOLDOWN_MS;
+  if (Date.now() < eligibleAt) {
+    return { kind: "on_cooldown", eligibleAt };
+  }
+
+  return { kind: "ok" };
 }
 
 export async function POST(request: NextRequest) {
@@ -220,14 +337,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // As the final gate, verify on-chain that the wallet is whitelisted by the
-    // Pax Identity contract.  This check is intentionally deferred until after
-    // all cheaper Firestore checks have passed so that on-chain RPC calls are
-    // only made for participants who have already cleared every off-chain
-    // eligibility condition.
-    const whitelisted = await isWalletWhitelisted(walletAddress as Address);
+    // The on-chain claim ledger lives in a contract that requires both the
+    // EngagementRewards proxy and our registered app address to query. The
+    // proxy is hard-coded in config; the app address comes from env. If env
+    // isn't set the precheck cannot answer "has this user claimed?", so we
+    // fail closed rather than silently letting users hit a reverting tx.
+    if (!APP_ADDRESS) {
+      return NextResponse.json(
+        {
+          eligible: false,
+          participantExists: true,
+          reasonCode: "MISSING_APP_ADDRESS" as EligibilityReason,
+        },
+        { status: 500 }
+      );
+    }
 
-    if (!whitelisted) {
+    // As the final gate, verify on-chain that (a) the wallet is whitelisted
+    // by the Pax Identity contract and (b) the wallet's identity root has
+    // not already claimed an engagement reward for this app within the
+    // 180-day cooldown enforced by the EngagementRewards contract. These
+    // checks are deliberately deferred until after the cheaper Firestore
+    // gates so we only spend RPC quota on participants who have cleared
+    // every off-chain condition.
+    const onChainStatus = await checkOnChainStatus(
+      walletAddress as Address,
+      APP_ADDRESS
+    );
+
+    if (onChainStatus.kind === "not_whitelisted") {
       return NextResponse.json(
         {
           eligible: false,
@@ -238,10 +376,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (onChainStatus.kind === "on_cooldown") {
+      return NextResponse.json(
+        {
+          eligible: false,
+          participantExists: true,
+          reasonCode: "ENGAGEMENT_CLAIM_ON_COOLDOWN" as EligibilityReason,
+          eligibleAt: onChainStatus.eligibleAt,
+        },
+        { status: 403 }
+      );
+    }
+
     // All eligibility conditions are satisfied: the participant exists, has at
     // least two valid task completions with the most recent one older than
-    // 24 hours, owns a registered withdrawal wallet, and that wallet is
-    // whitelisted on-chain.
+    // 24 hours, owns a registered withdrawal wallet, that wallet is
+    // whitelisted on-chain, and the identity root has not claimed for this
+    // app within the on-chain 180-day cooldown.
     return NextResponse.json({
       eligible: true,
       participantExists: true,
