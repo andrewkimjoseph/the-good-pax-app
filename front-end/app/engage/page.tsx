@@ -120,11 +120,13 @@ function PrecheckBanner({
   message,
   reasonCode,
   countdown,
+  eligibleAt,
 }: {
   state: PrecheckState;
   message: string;
   reasonCode: string;
   countdown: Countdown | null;
+  eligibleAt?: number;
 }) {
   return (
     <div
@@ -134,11 +136,18 @@ function PrecheckBanner({
     >
       {message}
       {state === "ineligible" &&
-        reasonCode === "NO_VALID_TASK_COMPLETION" &&
+        reasonCode === "REWARD_ON_COOLDOWN" &&
         countdown && (
           <p className="mt-2 font-semibold">
             {countdown.hours}:{countdown.minutes}:{countdown.seconds} until
             eligible
+          </p>
+        )}
+      {state === "ineligible" &&
+        reasonCode === "ENGAGEMENT_CLAIM_ON_COOLDOWN" &&
+        typeof eligibleAt === "number" && (
+          <p className="mt-2 font-semibold">
+            Eligible again on {formatEligibleAtDate(eligibleAt)}
           </p>
         )}
     </div>
@@ -283,6 +292,17 @@ function getStatusMessage(reason: string): string {
   );
 }
 
+// Renders a long-duration cooldown as a human-readable date instead of
+// HH:MM:SS, because a 180-day countdown displayed as "4319:59:59" gives the
+// user no useful information at a glance.
+function formatEligibleAtDate(eligibleAt: number): string {
+  return new Date(eligibleAt).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 function ProductionRewardsEngagementButton({
   participantId,
 }: {
@@ -306,7 +326,7 @@ function ProductionRewardsEngagementButton({
     undefined
   );
   const countdown = useCountdown(
-    precheckState === "ineligible" && precheckReasonCode === "NO_VALID_TASK_COMPLETION"
+    precheckState === "ineligible" && precheckReasonCode === "REWARD_ON_COOLDOWN"
       ? precheckEligibleAt
       : undefined
   );
@@ -588,6 +608,7 @@ function ProductionRewardsEngagementButton({
           message={precheckMessage}
           reasonCode={precheckReasonCode}
           countdown={countdown}
+          eligibleAt={precheckEligibleAt}
         />
       )}
 
