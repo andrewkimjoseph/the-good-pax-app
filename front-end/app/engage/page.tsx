@@ -568,8 +568,7 @@ function ProductionRewardsEngagementButton({
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-sm mx-auto px-4">
-      <div className="w-full p-[2px] rounded-xl bg-gradient-to-r from-[#FF9C4C] to-[#FF5C86]">
-        <div className="w-full rounded-[10px] bg-white px-4 py-6">
+      <div className="w-full rounded-xl bg-white px-4 py-6">
           <div className="text-center mb-6">
             <div className="mb-6 flex justify-center">
               <FontAwesomeIcon
@@ -599,7 +598,6 @@ function ProductionRewardsEngagementButton({
               )}
             </Button>
           </div>
-        </div>
       </div>
 
       {precheckState !== "idle" && (
