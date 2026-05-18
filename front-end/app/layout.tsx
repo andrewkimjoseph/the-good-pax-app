@@ -25,6 +25,8 @@ export const metadata = {
     shortcut: "/thegoodpaxapp.svg",
   },
   other: {
+    "talentapp:project_verification":
+      "cf35947755ed209fb69af4f23d1b3061edd406b1f29e62a80d5a0bef97399e871af6e2e197af02806bdd27e449a1bc0c5199945a0b11fce1cb990f250719d5d9",
     "fc:miniapp":
       '{"version":"1","imageUrl":"https://thegoodpax.app/thegoodpaxapp.png","button":{"title":"🚩 Start","action":{"type":"launch_miniapp","name":"The Good Pax App","url":"https://thegoodpax.app","splashImageUrl":"https://thegoodpax.app/thegoodpaxapp.png","splashBackgroundColor":"#f5f0ec"}}}',
     "fc:frame":
