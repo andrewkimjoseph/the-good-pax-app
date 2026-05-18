@@ -17,6 +17,7 @@ import { checkIfEngagementRewardsTransactionReverted } from "@/services/checkIfE
 import { getAppSignature } from "@/services/getAppSignature";
 import { analytics } from "@/services/analytics";
 import { getFbclid, getStoredFbclid, appendFbclidToUrl } from "@/services/fbclid";
+import { ENGAGEMENT_REWARDS_PROXY_CONTRACT_ADDRESS } from "../api/engagementRewards/eligibility/config";
 
 // Engagement page flow:
 // 1) Parse participantId from URL query params.
@@ -312,7 +313,7 @@ function ProductionRewardsEngagementButton({
   const chainId = useChainId();
   const { openTxToast } = useNotification();
   const engagementRewards = useEngagementRewards(
-    "0x25db74CF4E7BA120526fd87e159CF656d94bAE43"
+    ENGAGEMENT_REWARDS_PROXY_CONTRACT_ADDRESS
   );
 
   const [isLoading, setIsLoading] = useState(false);
@@ -611,12 +612,6 @@ function ProductionRewardsEngagementButton({
       )}
 
       {status && <StatusBanner status={status} />}
-
-      {!participantId && (
-        <p className="text-sm text-[#625C89] text-center">
-          Missing participantId in the URL.
-        </p>
-      )}
 
       {!isConnected && (
         <p className="text-sm text-[#625C89] text-center">
