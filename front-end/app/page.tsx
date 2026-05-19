@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
+import { injected } from "wagmi/connectors";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +20,7 @@ import { getFbclid, appendFbclidToUrl } from "@/services/fbclid";
 
 export default function Home() {
   const { isConnected, address } = useAccount();
+  const { connect } = useConnect();
   const { checkVerificationStatus, generateFVLink, sdkReady } =
     useWalletVerification();
   const [verificationStatus, setVerificationStatus] =
@@ -34,6 +36,15 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (
+      (window as Window & { ethereum?: { isMiniPay?: boolean } }).ethereum
+        ?.isMiniPay
+    ) {
+      connect({ connector: injected({ target: "metaMask" }) });
+    }
+  }, [connect]);
 
   // Track page view on mount and capture fbclid
   useEffect(() => {
