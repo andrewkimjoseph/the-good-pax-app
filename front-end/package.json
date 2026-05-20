@@ -18,7 +18,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.1",
     "@goodsdks/citizen-sdk": "^1.2.3",
-    "@goodsdks/engagement-sdk": "^1.0.1",
+    "@goodsdks/engagement-sdk": "1.0.4",
     "@goodsdks/identity-sdk": "^1.0.5",
     "@lifi/widget": "^3.40.12",
     "@mysten/dapp-kit": "^1.0.4",
