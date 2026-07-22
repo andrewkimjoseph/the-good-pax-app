@@ -50,8 +50,9 @@ The Good Pax App is your gateway to Universal Basic Income (UBI) on the Celo blo
 - **Blockchain**: Celo Network
 - **Wallet Integration**: Wagmi 2.16.9, RainbowKit 2.2.8
 - **Blockchain Client**: Viem 2.37.1
+- **Celina SDK**: `@andrewkimjoseph/celina-sdk` 0.15.8 (server-side UBI claim prepare)
 - **GoodDollar SDKs**:
-  - `@goodsdks/citizen-sdk`: ^1.2.2 (UBI claiming)
+  - `@goodsdks/engagement-sdk`: 1.0.4 (engagement rewards)
   - `@goodsdks/identity-sdk`: ^1.0.5 (Human verification)
 - **Analytics**: PostHog, Vercel Analytics, Meta Pixel, TikTok Pixel
 - **Error Tracking**: Sentry (@sentry/nextjs)
@@ -68,15 +69,19 @@ the-good-pax-app/
 │   │   ├── engage/            # Engagement program ended (info)
 │   │   ├── onboarding/        # User onboarding flow
 │   │   ├── api/               # API routes
-│   │   │   └── getAppSignature/  # (Legacy) signature generation
+│   │   │   ├── claim/            # Celina UBI eligibility + prepare
+│   │   │   └── getAppSignature/  # Engagement app signature
 │   │   └── .well-known/       # Farcaster configuration
 │   ├── components/            # React components
 │   │   ├── ui/                # Reusable UI components
 │   │   ├── Providers.tsx      # Wallet & query providers
 │   │   ├── Header.tsx         # Navigation header
 │   │   └── Footer.tsx         # Footer component
+│   ├── lib/
+│   │   └── celina.ts          # Server-side Celina client
 │   ├── services/              # Business logic services
 │   │   ├── analytics.ts       # Analytics service
+│   │   ├── claimUbi.ts        # Claim prepare + wallet send
 │   │   ├── checkWalletVerification.ts  # Verification logic
 │   │   ├── getAppSignature.ts # Signature helper
 │   │   └── fbclid.ts          # Facebook attribution
@@ -151,6 +156,7 @@ PAX_FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY
 
 # Blockchain RPC
 NEXT_PUBLIC_DRPC_API_KEY=your_drpc_key # DRPC API key for Celo RPC
+CELO_RPC_URL_MAINNET=https://forno.celo.org  # Optional server RPC for Celina (falls back to DRPC / Forno)
 
 # Analytics (Optional but recommended)
 NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key

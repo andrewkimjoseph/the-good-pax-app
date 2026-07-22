@@ -11,13 +11,13 @@
     "test:browserstack": "tsx test-script-browserstack.ts"
   },
   "dependencies": {
+    "@andrewkimjoseph/celina-sdk": "0.15.8",
     "@bigmi/react": "^0.8.0",
     "@blockscout/app-sdk": "^0.1.2",
     "@farcaster/miniapp-sdk": "^0.1.10",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.1",
-    "@goodsdks/citizen-sdk": "^1.2.3",
     "@goodsdks/engagement-sdk": "1.0.4",
     "@goodsdks/identity-sdk": "^1.0.5",
     "@lifi/widget": "^3.40.12",
