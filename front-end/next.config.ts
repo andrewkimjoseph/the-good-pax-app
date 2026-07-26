@@ -1,15 +1,48 @@
-import {withSentryConfig} from "@sentry/nextjs";
+import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import path from "node:path";
+
+const projectRoot = __dirname;
+const emptyModule = path.join(projectRoot, "lib/empty-module.ts");
+
+const optionalPeerAliases = {
+  "@base-org/account": emptyModule,
+  "@x402/core": emptyModule,
+  "@x402/evm": emptyModule,
+  "@x402/extensions": emptyModule,
+  "@x402/svm": emptyModule,
+  "@react-native-async-storage/async-storage": emptyModule,
+} as const;
 
 const nextConfig: NextConfig = {
   serverExternalPackages: [
     "@andrewkimjoseph/celina-sdk",
     "@amplitude/analytics-node",
     "@mento-protocol/mento-sdk",
+    "permissionless",
+    "ox",
   ],
-  // Set Turbopack root directory to silence workspace root warning
   turbopack: {
-    root: __dirname,
+    root: projectRoot,
+    resolveAlias: {
+      ...optionalPeerAliases,
+    },
+  },
+  webpack: (config, { webpack }) => {
+    config.resolve ??= {};
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      ...optionalPeerAliases,
+    };
+    // Subpaths like @x402/core/client must also resolve to the stub.
+    config.plugins ??= [];
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /^@x402\/(core|evm|extensions|svm)(\/.*)?$/,
+        emptyModule,
+      ),
+    );
+    return config;
   },
   async rewrites() {
     return [
@@ -57,5 +90,5 @@ export default withSentryConfig(nextConfig, {
   // See the following for more information:
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
-  automaticVercelMonitors: true
+  automaticVercelMonitors: true,
 });
