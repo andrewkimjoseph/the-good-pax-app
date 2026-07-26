@@ -2,8 +2,6 @@ import {withSentryConfig} from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  serverExternalPackages: ["@andrewkimjoseph/celina-sdk"],
   // Set Turbopack root directory to silence workspace root warning
   turbopack: {
     root: __dirname,
