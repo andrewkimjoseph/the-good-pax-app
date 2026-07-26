@@ -2,6 +2,11 @@ import {withSentryConfig} from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: [
+    "@andrewkimjoseph/celina-sdk",
+    "@amplitude/analytics-node",
+    "@mento-protocol/mento-sdk",
+  ],
   // Set Turbopack root directory to silence workspace root warning
   turbopack: {
     root: __dirname,

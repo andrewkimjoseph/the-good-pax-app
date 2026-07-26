@@ -21,7 +21,7 @@ function resolveRpcUrl(): string {
 export function getCelinaClient() {
   cachedClient ??= createCelinaClient({
     rpcUrl: resolveRpcUrl(),
-    analyticsDeviceId: "thegoodpax",
+    analyticsEnabled: false,
     attributionTags: ["thegoodpax"],
   });
   return cachedClient;

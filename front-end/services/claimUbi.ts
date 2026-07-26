@@ -28,19 +28,29 @@ export type PreparedClaimFlow = {
   from: `0x${string}`;
 };
 
+async function readClaimApiError(response: Response): Promise<string> {
+  const data = await response.json().catch(() => null);
+  if (
+    data &&
+    typeof data === "object" &&
+    "error" in data &&
+    typeof (data as { error: unknown }).error === "string"
+  ) {
+    return (data as { error: string }).error;
+  }
+  return `Claim API error ${response.status}`;
+}
+
 export async function fetchClaimEligibility(
   address: Address,
 ): Promise<ClaimEligibility> {
   const response = await fetch(
     `/api/claim?address=${encodeURIComponent(address)}`,
   );
-  const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(
-      typeof data.error === "string" ? data.error : "Failed to check eligibility",
-    );
+    throw new Error(await readClaimApiError(response));
   }
-  return data as ClaimEligibility;
+  return (await response.json()) as ClaimEligibility;
 }
 
 export async function prepareAndSendClaimUbi({
@@ -57,14 +67,11 @@ export async function prepareAndSendClaimUbi({
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ address }),
   });
-  const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(
-      typeof data.error === "string" ? data.error : "Failed to prepare claim",
-    );
+    throw new Error(await readClaimApiError(response));
   }
 
-  const prepared = data as PreparedClaimFlow;
+  const prepared = (await response.json()) as PreparedClaimFlow;
   if (!prepared.preparedFlow || !Array.isArray(prepared.steps) || prepared.steps.length === 0) {
     throw new Error("Prepare claim returned no transaction steps");
   }

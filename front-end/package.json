@@ -1,10 +1,10 @@
 {
   "name": "The Good Pax App",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "npm update browserstack-node-sdk",
