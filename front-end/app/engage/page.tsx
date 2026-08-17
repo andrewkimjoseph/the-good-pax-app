@@ -269,7 +269,7 @@ const statusByReasonCode = {
     "Rewards are temporarily unavailable. Please try again later or contact support.",
   PARTICIPANT_NOT_FOUND: "It seems you are not registered on Pax yet.",
   INSUFFICIENT_TASK_COMPLETIONS:
-    "Complete at least two tasks on Pax before claiming engagement rewards.",
+    "Complete and claim at least two tasks on Pax before claiming engagement rewards.",
   INVALID_TASK_COMPLETION_DATA:
     "We could not verify your task history. Please contact support.",
   REWARD_ON_COOLDOWN:

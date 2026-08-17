@@ -17,11 +17,16 @@ const COLLECTIONS = {
   PARTICIPANTS: "participants",
   TASK_COMPLETIONS: "task_completions",
   PAYMENT_METHODS: "payment_methods",
+  REWARDS: "rewards",
 } as const;
 
+// Over-fetch completed docs so a streak of recent unclaimed completions cannot
+// hide older complete-and-claimed ones when we only keep the first two claimed.
+const COMPLETED_COMPLETIONS_LOOKBACK = 50;
+
 // The engagement reward unlocks exactly 24 hours after the participant's most
-// recent valid task completion.  Storing the duration as a named constant
-// makes the business rule self-documenting and easy to adjust.
+// recent complete-and-claimed task completion.  Storing the duration as a named
+// constant makes the business rule self-documenting and easy to adjust.
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
 // The EngagementRewards contract enforces a 180-day claim cooldown per
@@ -42,20 +47,56 @@ type EligibilityReason =
   | "MISSING_WALLET_ADDRESS"           // walletAddress was absent or blank in the request body
   | "MISSING_APP_ADDRESS"              // server is missing NEXT_PUBLIC_APP_ADDRESS configuration
   | "PARTICIPANT_NOT_FOUND"            // no Firestore document exists for the given participantId
-  | "INSUFFICIENT_TASK_COMPLETIONS"    // participant has fewer than 2 valid task completions
-  | "INVALID_TASK_COMPLETION_DATA"     // the most recent completion has a malformed timeCreated field
-  | "REWARD_ON_COOLDOWN"               // the 24-hour lock after the latest completion has not yet expired
+  | "INSUFFICIENT_TASK_COMPLETIONS"    // participant has fewer than 2 complete-and-claimed task completions
+  | "INVALID_TASK_COMPLETION_DATA"     // the most recent claimed completion has a malformed timeCompleted field
+  | "REWARD_ON_COOLDOWN"               // the 24-hour lock after the latest claimed completion has not yet expired
   | "UNREGISTERED_WITHDRAWAL_WALLET"   // the supplied wallet is not saved as a payment method for this participant
   | "WALLET_NOT_WHITELISTED"           // the wallet has not been approved on the on-chain Identity contract
   | "ENGAGEMENT_CLAIM_ON_COOLDOWN"     // the wallet (resolved to its whitelisted root) has already claimed this app within the on-chain 180-day cooldown
   | "ELIGIBLE";                        // all conditions satisfied — reward can be claimed
 
 // Returns the Unix-millisecond timestamp at which the participant becomes
-// eligible based on when their most recent valid task completion was recorded.
-// Keeping this calculation in a helper avoids duplicating the arithmetic and
-// makes it trivial to change the unlock window in one place.
-function computeEligibleAt(timeCreated: Timestamp): number {
-  return timeCreated.toMillis() + TWENTY_FOUR_HOURS_MS;
+// eligible based on when their most recent complete-and-claimed task was
+// finished. Keeping this calculation in a helper avoids duplicating the
+// arithmetic and makes it trivial to change the unlock window in one place.
+function computeEligibleAt(timeCompleted: Timestamp): number {
+  return timeCompleted.toMillis() + TWENTY_FOUR_HOURS_MS;
+}
+
+// Loads the two most recent task completions that are both complete
+// (`timeCompleted` set, `isValid === true`) and claimed (a rewards doc with
+// `isPaidOutToPaxAccount` and a string `txnHash`). Completions are ordered by
+// finish time, not start time. Requires a composite index on task_completions:
+// participantId ASC, isValid ASC, timeCompleted DESC. The rewards query may
+// also need participantId ASC, isPaidOutToPaxAccount ASC.
+async function getLastTwoClaimedCompletions(participantId: string) {
+  const [completedSnapshot, claimedRewardsSnapshot] = await Promise.all([
+    paxDB
+      .collection(COLLECTIONS.TASK_COMPLETIONS)
+      .where("participantId", "==", participantId)
+      .where("isValid", "==", true)
+      .orderBy("timeCompleted", "desc")
+      .limit(COMPLETED_COMPLETIONS_LOOKBACK)
+      .get(),
+    paxDB
+      .collection(COLLECTIONS.REWARDS)
+      .where("participantId", "==", participantId)
+      .where("isPaidOutToPaxAccount", "==", true)
+      .get(),
+  ]);
+
+  const claimedIds = new Set(
+    claimedRewardsSnapshot.docs
+      .filter((doc) => typeof doc.data().txnHash === "string")
+      .map((doc) => doc.data().taskCompletionId)
+      .filter((id): id is string => typeof id === "string")
+  );
+
+  return completedSnapshot.docs
+    .filter(
+      (doc) => doc.data().timeCompleted != null && claimedIds.has(doc.id)
+    )
+    .slice(0, 2);
 }
 
 // Result of the on-chain precheck. We resolve everything we need from the
@@ -233,26 +274,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch the two most recent valid task completions for this participant.
-    // Two documents are required because the engagement reward is only
-    // available to participants who have completed at least two tasks — a
-    // single completion is insufficient to qualify.  Ordering by timeCreated
-    // descending guarantees that docs[0] is always the newest, which is the
-    // one used to compute the 24-hour countdown: if the latest completion has
-    // already passed the delay window, the earlier one is guaranteed to have
-    // passed it too.  Limiting to 2 keeps the read cost minimal.
-    const latestValidTaskCompletionSnapshot = await paxDB
-      .collection(COLLECTIONS.TASK_COMPLETIONS)
-      .where("participantId", "==", participantId)
-      .where("isValid", "==", true)
-      .orderBy("timeCreated", "desc")
-      .limit(2)
-      .get();
+    // Fetch the two most recent complete-and-claimed task completions. Two
+    // claimed tasks are required to qualify; unclaimed or incomplete docs do
+    // not count. Ordering is by timeCompleted so the 24-hour countdown starts
+    // from when the latest claimed task was finished, not when it was started.
+    const lastTwoClaimedCompletions =
+      await getLastTwoClaimedCompletions(participantId);
 
-    // Fewer than 2 valid completions means the participant has not yet met the
-    // minimum task threshold and is therefore not eligible for an engagement
-    // reward regardless of timing.
-    if (latestValidTaskCompletionSnapshot.size < 2) {
+    if (lastTwoClaimedCompletions.length < 2) {
       return NextResponse.json(
         {
           eligible: false,
@@ -263,18 +292,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // docs[0] is the most recent valid completion because the query is ordered
-    // by timeCreated descending.
-    const latestValidTaskCompletion =
-      latestValidTaskCompletionSnapshot.docs[0].data();
-    const timeCreated = latestValidTaskCompletion.timeCreated;
+    // docs[0] is the most recent claimed completion because the query is
+    // ordered by timeCompleted descending.
+    const timeCompleted = lastTwoClaimedCompletions[0].data().timeCompleted;
 
     // Firestore Admin SDK should always deserialise Firestore timestamp fields
     // as Timestamp instances.  This instanceof guard is a defensive check
     // against malformed or legacy documents in historical data that might have
     // stored the field as a plain number or string, which would cause
     // computeEligibleAt to crash at runtime.
-    if (!(timeCreated instanceof Timestamp)) {
+    if (!(timeCompleted instanceof Timestamp)) {
       return NextResponse.json(
         {
           eligible: false,
@@ -289,7 +316,7 @@ export async function POST(request: NextRequest) {
     // Returning eligibleAt in the response body lets the client render a live
     // countdown timer without needing to poll this endpoint repeatedly — the
     // client can calculate the remaining time locally until the value expires.
-    const eligibleAt = computeEligibleAt(timeCreated);
+    const eligibleAt = computeEligibleAt(timeCompleted);
 
     if (Date.now() < eligibleAt) {
       return NextResponse.json(
@@ -389,8 +416,8 @@ export async function POST(request: NextRequest) {
     }
 
     // All eligibility conditions are satisfied: the participant exists, has at
-    // least two valid task completions with the most recent one older than
-    // 24 hours, owns a registered withdrawal wallet, that wallet is
+    // least two complete-and-claimed task completions with the most recent one
+    // older than 24 hours, owns a registered withdrawal wallet, that wallet is
     // whitelisted on-chain, and the identity root has not claimed for this
     // app within the on-chain 180-day cooldown.
     return NextResponse.json({
