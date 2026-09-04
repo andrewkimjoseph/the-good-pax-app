@@ -175,7 +175,7 @@ const ClaimContent = () => {
     if (!isEligibleToClaim || !entitlement || entitlement === BigInt(0)) {
       setStatus(
         schemePaused
-          ? "GoodDollar UBI is paused"
+          ? "UBI is paused"
           : "No entitlement available to claim",
       );
       return;
@@ -259,7 +259,7 @@ const ClaimContent = () => {
             {isCheckingEntitlement
               ? "Checking your UBI status..."
               : schemePaused
-                ? "GoodDollar UBI is paused"
+                ? "UBI is paused"
                 : canClaim
                   ? `Ready to claim: ${formatEntitlement(entitlement!)}`
                   : countdown
@@ -279,7 +279,7 @@ const ClaimContent = () => {
             }`}
           >
             {schemePaused
-              ? "Claiming is paused on GoodDollar. Check back when UBI resumes."
+              ? "UBI is paused. Check back later."
               : canClaim
                 ? `You have ${formatEntitlement(entitlement)} available to claim`
                 : countdown
