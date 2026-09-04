@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       isEligibleToClaim: eligibility.isEligibleToClaim,
+      schemePaused: eligibility.schemePaused,
       claimableAmount: eligibility.claimableAmount,
       claimableAmountFormatted: eligibility.claimableAmountFormatted,
       alreadyClaimedToday: eligibility.alreadyClaimedToday,

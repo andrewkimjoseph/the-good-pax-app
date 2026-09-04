@@ -2,6 +2,7 @@ import type { Address, Hex, PublicClient, WalletClient } from "viem";
 
 export type ClaimEligibility = {
   isEligibleToClaim: boolean;
+  schemePaused: boolean;
   claimableAmount: string;
   claimableAmountFormatted: string;
   alreadyClaimedToday: boolean;

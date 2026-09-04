@@ -61,6 +61,8 @@ const ClaimContent = () => {
 
   const [entitlement, setEntitlement] = useState<bigint | null>(null);
   const [entitlementFormatted, setEntitlementFormatted] = useState<string | null>(null);
+  const [isEligibleToClaim, setIsEligibleToClaim] = useState(false);
+  const [schemePaused, setSchemePaused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingEntitlement, setIsCheckingEntitlement] = useState(false);
   const [status, setStatus] = useState<string>("");
@@ -74,6 +76,8 @@ const ClaimContent = () => {
     if (!userAddress || !isConnected) {
       setEntitlement(null);
       setEntitlementFormatted(null);
+      setIsEligibleToClaim(false);
+      setSchemePaused(false);
       setNextClaimTime(null);
       return;
     }
@@ -85,8 +89,14 @@ const ClaimContent = () => {
       const amount = BigInt(eligibility.claimableAmount || "0");
       setEntitlement(amount);
       setEntitlementFormatted(eligibility.claimableAmountFormatted);
+      setIsEligibleToClaim(eligibility.isEligibleToClaim);
+      setSchemePaused(eligibility.schemePaused);
 
-      if (amount === BigInt(0) && eligibility.nextClaimAvailableAt) {
+      if (
+        !eligibility.schemePaused &&
+        !eligibility.isEligibleToClaim &&
+        eligibility.nextClaimAvailableAt
+      ) {
         const next = new Date(eligibility.nextClaimAvailableAt);
         if (!Number.isNaN(next.getTime()) && next.getTime() > Date.now()) {
           setNextClaimTime(next);
@@ -101,6 +111,8 @@ const ClaimContent = () => {
       setError("Failed to check entitlement");
       setEntitlement(null);
       setEntitlementFormatted(null);
+      setIsEligibleToClaim(false);
+      setSchemePaused(false);
       setNextClaimTime(null);
     } finally {
       setIsCheckingEntitlement(false);
@@ -144,13 +156,9 @@ const ClaimContent = () => {
 
   const formatEntitlement = (amount: bigint) => {
     if (entitlementFormatted) {
-      const parsed = Number(entitlementFormatted);
-      if (!Number.isNaN(parsed)) {
-        return parsed.toFixed(4);
-      }
       return entitlementFormatted;
     }
-    return (Number(amount) / Math.pow(10, 18)).toFixed(4);
+    return `${(Number(amount) / Math.pow(10, 18)).toFixed(4)} G$`;
   };
 
   const handleClaim = async () => {
@@ -164,8 +172,12 @@ const ClaimContent = () => {
       return;
     }
 
-    if (!entitlement || entitlement === BigInt(0)) {
-      setStatus("No entitlement available to claim");
+    if (!isEligibleToClaim || !entitlement || entitlement === BigInt(0)) {
+      setStatus(
+        schemePaused
+          ? "GoodDollar UBI is paused"
+          : "No entitlement available to claim",
+      );
       return;
     }
 
@@ -217,7 +229,7 @@ const ClaimContent = () => {
     }
   };
 
-  const hasEntitlement = entitlement !== null && entitlement > BigInt(0);
+  const canClaim = isEligibleToClaim && entitlement !== null && entitlement > BigInt(0);
   const claimReady = Boolean(walletClient && publicClient);
 
   return (
@@ -238,7 +250,7 @@ const ClaimContent = () => {
         <div className="flex items-center justify-center gap-3 mb-4">
           {isCheckingEntitlement ? (
             <FontAwesomeIcon icon={faSpinner} spin className="h-5 w-5 text-blue-500" />
-          ) : hasEntitlement ? (
+          ) : canClaim ? (
             <FontAwesomeIcon icon={faCircleCheck} className="h-5 w-5 text-green-500" />
           ) : (
             <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-orange-500" />
@@ -246,27 +258,33 @@ const ClaimContent = () => {
           <span className="text-sm text-gray-600">
             {isCheckingEntitlement
               ? "Checking your UBI status..."
-              : hasEntitlement
-                ? `Ready to claim: ${formatEntitlement(entitlement!)} G$`
-                : countdown
-                  ? "UBI will be available soon"
-                  : "Check back later for UBI"}
+              : schemePaused
+                ? "GoodDollar UBI is paused"
+                : canClaim
+                  ? `Ready to claim: ${formatEntitlement(entitlement!)}`
+                  : countdown
+                    ? "UBI will be available soon"
+                    : "Check back later for UBI"}
           </span>
         </div>
 
         {entitlement !== null && !isCheckingEntitlement && (
           <div
             className={`text-xs p-3 rounded-md w-full text-center mb-4 ${
-              hasEntitlement
+              canClaim
                 ? "bg-green-100 text-green-800 border border-green-200"
-                : "bg-gray-100 text-gray-600 border border-gray-200"
+                : schemePaused
+                  ? "bg-amber-100 text-amber-800 border border-amber-200"
+                  : "bg-gray-100 text-gray-600 border border-gray-200"
             }`}
           >
-            {hasEntitlement
-              ? `You have ${formatEntitlement(entitlement)} G$ available to claim`
-              : countdown
-                ? "Your next UBI is coming up - see countdown below"
-                : "No UBI available right now - check back daily"}
+            {schemePaused
+              ? "Claiming is paused on GoodDollar. Check back when UBI resumes."
+              : canClaim
+                ? `You have ${formatEntitlement(entitlement)} available to claim`
+                : countdown
+                  ? "Your next UBI is coming up - see countdown below"
+                  : "No UBI available right now - check back daily"}
           </div>
         )}
       </div>
@@ -274,7 +292,7 @@ const ClaimContent = () => {
       <div className="w-full flex justify-center">
         <Button
           onClick={handleClaim}
-          disabled={!isConnected || isLoading || !claimReady || !hasEntitlement}
+          disabled={!isConnected || isLoading || !claimReady || !canClaim}
           className="w-full text-sm px-6 py-3"
         >
           {isLoading ? (
@@ -286,7 +304,9 @@ const ClaimContent = () => {
             "Connect Wallet"
           ) : !claimReady || isCheckingEntitlement ? (
             "Checking..."
-          ) : !hasEntitlement ? (
+          ) : schemePaused ? (
+            "UBI paused"
+          ) : !canClaim ? (
             countdown ? `Available in ${countdown}` : "Check again later"
           ) : (
             "Claim UBI"
