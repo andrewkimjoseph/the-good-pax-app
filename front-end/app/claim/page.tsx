@@ -274,7 +274,7 @@ const ClaimContent = () => {
               canClaim
                 ? "bg-green-100 text-green-800 border border-green-200"
                 : schemePaused
-                  ? "bg-amber-100 text-amber-800 border border-amber-200"
+                  ? "bg-amber-100 text-amber-800 border border-amber-200 whitespace-nowrap"
                   : "bg-gray-100 text-gray-600 border border-gray-200"
             }`}
           >
