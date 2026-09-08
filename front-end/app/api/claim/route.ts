@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
+import { drainCelinaAnalytics } from "@andrewkimjoseph/celina-sdk";
 import { isAddress, type Address } from "viem";
 import { getCelinaClient } from "@/lib/celina";
 
@@ -14,6 +15,7 @@ function parseAddress(value: unknown): Address | null {
  * Returns GoodDollar UBI eligibility via Celina.
  */
 export async function GET(request: NextRequest) {
+  after(() => drainCelinaAnalytics());
   const address = parseAddress(request.nextUrl.searchParams.get("address"));
   if (!address) {
     return NextResponse.json(
