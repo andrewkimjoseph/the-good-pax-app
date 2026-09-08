@@ -11,7 +11,7 @@
     "test:browserstack": "tsx test-script-browserstack.ts"
   },
   "dependencies": {
-    "@andrewkimjoseph/celina-sdk": "0.15.8",
+    "@andrewkimjoseph/celina-sdk": "0.26.0",
     "@bigmi/react": "^0.8.0",
     "@blockscout/app-sdk": "^0.1.2",
     "@farcaster/miniapp-sdk": "^0.1.10",
