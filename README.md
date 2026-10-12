@@ -50,7 +50,7 @@ The Good Pax App is your gateway to Universal Basic Income (UBI) on the Celo blo
 - **Blockchain**: Celo Network
 - **Wallet Integration**: Wagmi 2.16.9, RainbowKit 2.2.8
 - **Blockchain Client**: Viem 2.37.1
-- **Celina SDK**: `@andrewkimjoseph/celina-sdk` 0.15.8 (server-side UBI claim prepare)
+- **Celina SDK**: `@cnvlabskoxyz/celina-sdk` 0.15.8 (server-side UBI claim prepare)
 - **GoodDollar SDKs**:
   - `@goodsdks/engagement-sdk`: 1.0.4 (engagement rewards)
   - `@goodsdks/identity-sdk`: ^1.0.5 (Human verification)

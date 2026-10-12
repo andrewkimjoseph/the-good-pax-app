@@ -1,5 +1,5 @@
 import { after, NextRequest, NextResponse } from "next/server";
-import { drainCelinaAnalytics } from "@andrewkimjoseph/celina-sdk";
+import { drainCelinaAnalytics } from "@cnvlabskoxyz/celina-sdk";
 import { isAddress, type Address } from "viem";
 import { getCelinaClient } from "@/lib/celina";
 
