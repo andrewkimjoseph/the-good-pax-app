@@ -1,4 +1,4 @@
-import { createCelinaClient } from "@andrewkimjoseph/celina-sdk";
+import { createCelinaClient } from "@cnvlabskoxyz/celina-sdk";
 
 type CelinaClient = ReturnType<typeof createCelinaClient>;
 

@@ -16,7 +16,7 @@ const optionalPeerAliases = {
 
 const nextConfig: NextConfig = {
   serverExternalPackages: [
-    "@andrewkimjoseph/celina-sdk",
+    "@cnvlabskoxyz/celina-sdk",
     "@amplitude/analytics-node",
     "@mento-protocol/mento-sdk",
     "permissionless",
