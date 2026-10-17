@@ -371,7 +371,7 @@ Enable debug logging by checking browser console. The app logs important events 
 
 ## 📄 License
 
-This project is private and proprietary. All rights reserved.
+This project is private and proprietary. Copyright (c) 2026 CNV Labs KO XYZ. All rights reserved.
 
 ## 🙏 Acknowledgments
 
