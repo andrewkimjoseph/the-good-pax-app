@@ -10,7 +10,7 @@ The Good Pax App is your gateway to Universal Basic Income (UBI) on the Celo blo
 
 - **Claim Daily UBI**: Get free G$ (GoodDollar) tokens every single day
 - **Pax (Canvassing)**: Complete tasks and earn G$ and stablecoins
-- **Swap Tokens**: Exchange G$ tokens for other cryptocurrencies
+- **GoodReserve**: Exchange G$ and USDm on Celo, or just read a quote
 - **Human Verification**: Secure facial verification ensures one person = one account
 
 ### Pax links
@@ -190,7 +190,7 @@ SENTRY_PROJECT=thegoodpaxapp
 4. **Get verified**: Complete facial verification to prove you're human
 5. **Claim UBI**: Once verified, claim your daily UBI from the home page
 6. **Explore Pax**: Complete tasks in Pax and earn G$ and stablecoins
-7. **Swap tokens**: Exchange G$ for other cryptocurrencies via the swap link
+7. **GoodReserve**: Exchange G$ and USDm, or read a quote, at `/goodReserve`
 
 ### For Developers
 

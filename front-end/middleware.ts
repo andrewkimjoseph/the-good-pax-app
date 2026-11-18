@@ -3,6 +3,14 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // next.config redirects are case-insensitive, so this exact lowercase path
+  // cannot live there without looping back onto /goodReserve.
+  if (pathname === "/goodreserve") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/goodReserve";
+    return NextResponse.redirect(url, 308);
+  }
   
   // Paths that don't require checks
   const publicPaths = ['/_next', '/api'];
