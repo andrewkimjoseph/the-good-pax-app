@@ -112,8 +112,8 @@ export default function AboutPage() {
                     </span>
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Convert your G$ into other tokens anytime using the built-in swap.
-                    Turn your daily UBI into stablecoins or other assets at any time.
+                    Convert G$ and USDm anytime with GoodReserve.
+                    Turn your daily UBI into USDm, or the other way, at any time.
                   </p>
                 </div>
               </div>

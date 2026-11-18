@@ -160,7 +160,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link
-                  href={appendFbclidToUrl("/swap")}
+                  href={appendFbclidToUrl("/goodReserve")}
                   className="block w-full"
                   onClick={() => analytics.trackSwapViewed()}
                 >
