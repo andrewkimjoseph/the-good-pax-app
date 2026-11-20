@@ -34,6 +34,9 @@ const nextConfig: NextConfig = {
     },
   },
   webpack: (config, { webpack }) => {
+    if (config.cache && typeof config.cache === "object") {
+      config.cache.version = `${config.cache.version ?? ""}-goodreservekit-0.2.1`;
+    }
     config.resolve ??= {};
     config.resolve.alias = {
       ...config.resolve.alias,
