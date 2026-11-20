@@ -81,7 +81,7 @@ export default function GoodReservePage() {
 
       <div className="flex w-full justify-center">
         {hydrated ? (
-          <GoodReserveProvider attributionTags={["thegoodpaxapp"]} theme={theme} analyticsDeviceId="the_good_pax_app">
+          <GoodReserveProvider attributionTags={["thegoodpaxapp"]} theme={theme}>
             <GoodReserveWidget mode={mode} />
           </GoodReserveProvider>
         ) : (
