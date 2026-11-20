@@ -30,10 +30,6 @@ const theme = flatTheme({
   colors: { primary: "#363062" },
 });
 
-const rpcUrl = process.env.NEXT_PUBLIC_DRPC_API_KEY
-  ? `https://lb.drpc.live/celo/${process.env.NEXT_PUBLIC_DRPC_API_KEY}`
-  : undefined;
-
 export default function GoodReservePage() {
   const hydrated = useHydrated();
   const [mode, setMode] = useState<GoodReserveWidgetMode>("swap");
@@ -85,7 +81,7 @@ export default function GoodReservePage() {
 
       <div className="flex w-full justify-center">
         {hydrated ? (
-          <GoodReserveProvider attributionTags={["thegoodpaxapp"]} rpcUrl={rpcUrl} theme={theme} analyticsDeviceId="the_good_pax_app">
+          <GoodReserveProvider attributionTags={["thegoodpaxapp"]} theme={theme} analyticsDeviceId="the_good_pax_app">
             <GoodReserveWidget mode={mode} />
           </GoodReserveProvider>
         ) : (
